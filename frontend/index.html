@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mery Salud - Farmacia Inteligente</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Navbar Superior -->
+  <header class="navbar-container">
+    <div class="navbar-top container">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon"><i data-lucide="plus"></i></div>
+        <div class="brand-text">
+          <span class="brand-name">Mery Salud</span>
+          <span class="brand-sub">FARMACIA INTELIGENTE</span>
+        </div>
+      </a>
+
+      <!-- Buscador Predictivo -->
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Buscar por medicamento, síntoma o principio activo..." />
+      </div>
+
+      <!-- Acciones Rápidas -->
+      <div class="nav-actions">
+        <a href="https://wa.me/51987654321" target="_blank" class="btn-whatsapp-nav">
+          <i data-lucide="message-circle"></i>
+          <span>Pedir por WhatsApp</span>
+        </a>
+        <a href="#" class="nav-cart" id="cartBtn" title="Ver Carrito">
+          <i data-lucide="shopping-cart"></i>
+          <span class="cart-badge" id="cartCount">0</span>
+        </a>
+        <a href="auth.html" class="nav-user" title="Iniciar Sesión / Registrarse">
+          <i data-lucide="user"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Menú de Categorías -->
+    <nav class="navbar-bottom">
+      <div class="container nav-links">
+        <a href="#inicio" class="active">Inicio</a>
+        <a href="#medicamentos">Medicamentos</a>
+        <a href="#primeros-auxilios">Primeros Auxilios</a>
+        <a href="#adulto-mayor">Adulto Mayor & Crónicos</a>
+        <a href="#ofertas">Ofertas del Mes</a>
+        <a href="#como-funciona">¿Cómo funciona?</a>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section container" id="inicio">
+    <div class="hero-text-col">
+      <h1 class="hero-title">
+        Tu farmacia de confianza con <span class="highlight-blue">atención y delivery rápido</span>
+      </h1>
+      <p class="hero-desc">
+        Pensado especialmente para la tranquilidad y cuidado de tu familia. Sube tu receta médica, pídenos ayuda por WhatsApp o compra de forma directa y segura.
+      </p>
+
+      <div class="hero-badges">
+        <span class="badge"><i data-lucide="zap"></i> Atención Inmediata</span>
+        <span class="badge"><i data-lucide="truck"></i> Envíos &lt; 2 hrs</span>
+        <span class="badge"><i data-lucide="map-pin"></i> Cobertura Local</span>
+      </div>
+
+      <div class="hero-cta-group">
+        <a href="catalogo.html" class="btn btn-blue">Ver Catálogo Completo <i data-lucide="arrow-right"></i></a>
+        <a href="https://wa.me/51987654321" target="_blank" class="btn btn-green"><i data-lucide="message-circle"></i> Pedir por WhatsApp</a>
+      </div>
+    </div>
+
+    <div class="hero-img-col">
+      <img src="https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&w=800&q=80" alt="Atención en Farmacia Mery Salud" class="hero-banner-img" />
+    </div>
+  </section>
+
+  <!-- Categorías Principales -->
+  <section class="categories-section container" id="medicamentos">
+    <h2 class="section-title">Categorías Principales</h2>
+    <div class="categories-grid">
+      <a href="#productos" class="cat-card">
+        <div class="cat-icon icon-blue"><i data-lucide="pill"></i></div>
+        <h3>Medicamentos & Recetas</h3>
+      </a>
+      <a href="#productos" class="cat-card" id="primeros-auxilios">
+        <div class="cat-icon icon-pink"><i data-lucide="briefcase-medical"></i></div>
+        <h3>Primeros Auxilios</h3>
+      </a>
+      <a href="#productos" class="cat-card" id="adulto-mayor">
+        <div class="cat-icon icon-amber"><i data-lucide="heart-pulse"></i></div>
+        <h3>Adulto Mayor & Crónicos</h3>
+      </a>
+      <a href="#productos" class="cat-card" id="ofertas">
+        <div class="cat-icon icon-teal"><i data-lucide="tag"></i></div>
+        <h3>Ofertas del Mes</h3>
+      </a>
+    </div>
+  </section>
+
+  <!-- Productos Destacados -->
+  <section class="products-section container" id="productos">
+    <div class="products-header">
+      <div>
+        <h2 class="section-title">Productos Destacados</h2>
+        <p class="section-subtitle">Los medicamentos de uso diario y artículos esenciales con mayor demanda.</p>
+      </div>
+      <a href="catalogo.html" class="link-see-all">Ver todos los productos <i data-lucide="arrow-right"></i></a>
+    </div>
+
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="product-img-box">
+          <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80" alt="Paracetamol 500mg" />
+        </div>
+        <span class="stock-badge">En Stock</span>
+        <h3 class="product-name">Paracetamol 500mg</h3>
+        <p class="product-detail">Caja x 20 tabletas</p>
+        <div class="product-price">S/ 12.90</div>
+        <button class="btn btn-add-cart" data-name="Paracetamol 500mg" data-price="12.90">
+          <i data-lucide="shopping-cart"></i> Agregar al carrito
+        </button>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img-box">
+          <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80" alt="Ibuprofeno 400mg" />
+        </div>
+        <span class="stock-badge">En Stock</span>
+        <h3 class="product-name">Ibuprofeno 400mg</h3>
+        <p class="product-detail">Caja x 30 cápsulas</p>
+        <div class="product-price">S/ 18.50</div>
+        <button class="btn btn-add-cart" data-name="Ibuprofeno 400mg" data-price="18.50">
+          <i data-lucide="shopping-cart"></i> Agregar al carrito
+        </button>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img-box">
+          <img src="https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&w=400&q=80" alt="Vitamina C 1000mg" />
+        </div>
+        <span class="stock-badge">En Stock</span>
+        <h3 class="product-name">Vitamina C 1000mg</h3>
+        <p class="product-detail">Tubo x 20 tabletas efervescentes</p>
+        <div class="product-price">S/ 24.90</div>
+        <button class="btn btn-add-cart" data-name="Vitamina C 1000mg" data-price="24.90">
+          <i data-lucide="shopping-cart"></i> Agregar al carrito
+        </button>
+      </div>
+
+      <div class="product-card">
+        <div class="product-img-box">
+          <img src="https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=400&q=80" alt="Omeprazol 20mg" />
+        </div>
+        <span class="stock-badge">En Stock</span>
+        <h3 class="product-name">Omeprazol 20mg</h3>
+        <p class="product-detail">Caja x 30 cápsulas</p>
+        <div class="product-price">S/ 15.90</div>
+        <button class="btn btn-add-cart" data-name="Omeprazol 20mg" data-price="15.90">
+          <i data-lucide="shopping-cart"></i> Agregar al carrito
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cómo Funciona Tu Pedido -->
+  <section class="how-it-works-section" id="como-funciona">
+    <div class="container">
+      <div class="how-header">
+        <h2 class="section-title">¿Cómo funciona tu pedido?</h2>
+        <p class="section-subtitle">Realizar tu compra y recibirla es sumamente fácil. Proceso simple y adaptado para todos en casa.</p>
+      </div>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-top">
+            <div class="step-icon"><i data-lucide="upload-cloud"></i></div>
+            <span class="step-number">01</span>
+          </div>
+          <h3>Elige productos o sube tu receta</h3>
+          <p>Busca en el catálogo o sube una foto nítida de tu receta médica desde tu celular o computadora.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-top">
+            <div class="step-icon"><i data-lucide="user-check"></i></div>
+            <span class="step-number">02</span>
+          </div>
+          <h3>Confirma pedido y dirección</h3>
+          <p>Nuestros farmacéuticos verificarán los detalles y coordinarán contigo el método de pago más cómodo.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-top">
+            <div class="step-icon"><i data-lucide="package-check"></i></div>
+            <span class="step-number">03</span>
+          </div>
+          <h3>Recíbelo vía delivery</h3>
+          <p>Llevamos el pedido directo a la puerta de tu hogar, cumpliendo con los estándares de refrigeración y seguridad.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="container footer-content">
+      <div class="footer-col brand-col">
+        <div class="brand-logo footer-brand">
+          <div class="brand-icon"><i data-lucide="plus"></i></div>
+          <span class="brand-name">Mery Salud</span>
+        </div>
+        <p><i data-lucide="map-pin"></i> Av. Principal 1234, Lima</p>
+        <p><i data-lucide="clock"></i> Lun-Sáb: 8am - 10pm / Dom: 9am - 6pm</p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Navegación</h4>
+        <ul>
+          <li><a href="#medicamentos">Medicamentos</a></li>
+          <li><a href="#ofertas">Ofertas del Mes</a></li>
+          <li><a href="#como-funciona">¿Cómo funciona?</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="#">Términos y Condiciones</a></li>
+          <li><a href="#">Política de Privacidad</a></li>
+          <li><a href="#">Libro de Reclamaciones</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Contacto Directo</h4>
+        <p><i data-lucide="phone"></i> Central: (01) 456-7890</p>
+        <p><i data-lucide="message-circle"></i> WhatsApp: +51 987 654 321</p>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>© 2026 Farmacia Mery Salud. Todos los derechos reservados.</p>
+      <div class="footer-links">
+        <a href="repartidor.html">Portal Repartidor</a>
+        <a href="admin.html">Admin</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal Flotante: Carrito y Checkout (RF02, RF04, RF05, RF07) -->
+  <div class="cart-modal-overlay" id="cartModal">
+    <div class="cart-modal-container">
+      
+      <div class="cart-modal-header">
+        <div class="header-title-box">
+          <i data-lucide="shopping-bag"></i>
+          <h3>Tu Carrito de Compras</h3>
+        </div>
+        <button class="btn-close-cart" id="closeCartBtn">&times;</button>
+      </div>
+
+      <div class="cart-modal-body">
+        
+        <!-- Vista 1: Lista de Items -->
+        <div id="cartViewItems">
+          <div class="cart-items-list" id="cartItemsList"></div>
+
+          <div class="cart-summary-box">
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <strong id="cartSubtotal">S/ 0.00</strong>
+            </div>
+            <div class="summary-row">
+              <span>Costo de Envío:</span>
+              <strong id="cartShipping">S/ 5.00</strong>
+            </div>
+            <div class="summary-row total">
+              <span>Total a Pagar:</span>
+              <strong id="cartTotal">S/ 0.00</strong>
+            </div>
+          </div>
+
+          <button class="btn btn-blue w-100" id="btnGoToCheckout" disabled>
+            Continuar al Checkout <i data-lucide="arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Vista 2: Formulario de Checkout Mejorado -->
+        <form id="checkoutForm" style="display: none;" novalidate>
+          
+          <!-- Selector de Método de Entrega -->
+          <h4 class="checkout-subtitle">1. Método de Entrega</h4>
+          <div class="delivery-type-selector">
+            <label class="delivery-option active" id="optDelivery">
+              <input type="radio" name="deliveryMethod" value="DELIVERY" checked />
+              <div class="opt-content">
+                <i data-lucide="truck"></i>
+                <div>
+                  <strong>Envío a Domicilio</strong>
+                  <span>Costo: S/ 5.00</span>
+                </div>
+              </div>
+            </label>
+            <label class="delivery-option" id="optPickup">
+              <input type="radio" name="deliveryMethod" value="RECOJO" />
+              <div class="opt-content">
+                <i data-lucide="store"></i>
+                <div>
+                  <strong>Recojo en Tienda</strong>
+                  <span>Gratis (Av. Principal 1234)</span>
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <h4 class="checkout-subtitle">2. Datos de Contacto</h4>
+          <div class="form-group-checkout">
+            <label for="orderName">Nombre Completo</label>
+            <input type="text" id="orderName" placeholder="Ej. Juan Pérez" required />
+            <small class="field-error" id="errOrderName"></small>
+          </div>
+
+          <div class="form-row-checkout">
+            <div class="form-group-checkout">
+              <label for="orderPhone">Celular / WhatsApp (9 dígitos)</label>
+              <input type="tel" id="orderPhone" placeholder="987654321" maxlength="9" required />
+              <small class="field-error" id="errOrderPhone"></small>
+            </div>
+            <div class="form-group-checkout">
+              <label for="orderEmail">Correo Electrónico</label>
+              <input type="email" id="orderEmail" placeholder="juan@ejemplo.com" required />
+              <small class="field-error" id="errOrderEmail"></small>
+            </div>
+          </div>
+
+          <!-- Campos de Dirección (Se ocultan si elige Recojo en Tienda) -->
+          <div id="deliveryFieldsGroup">
+            <div class="form-group-checkout">
+              <label for="orderAddress">Dirección de Entrega</label>
+              <input type="text" id="orderAddress" placeholder="Av. Universitaria 450, SMP" />
+              <small class="field-error" id="errOrderAddress"></small>
+            </div>
+
+            <div class="form-group-checkout">
+              <label for="orderReference">Referencia</label>
+              <input type="text" id="orderReference" placeholder="Frente al parque, portón blanco" />
+            </div>
+          </div>
+
+          <h4 class="checkout-subtitle">3. Receta Médica (Opcional)</h4>
+          <div class="form-group-checkout">
+            <label for="orderPrescriptionFile">Subir foto de receta</label>
+            <input type="file" id="orderPrescriptionFile" accept="image/*,.pdf" />
+            <small class="text-hint">Requerido para medicamentos bajo prescripción.</small>
+          </div>
+
+          <h4 class="checkout-subtitle">4. Pago Simulado con Tarjeta</h4>
+          <div class="form-group-checkout">
+            <label for="cardNumber">Número de Tarjeta</label>
+            <input type="text" id="cardNumber" placeholder="4557 0000 0000 0000" maxlength="19" required />
+            <small class="field-error" id="errCardNumber"></small>
+          </div>
+
+          <div class="form-row-checkout">
+            <div class="form-group-checkout">
+              <label for="cardExp">Vencimiento (MM/AA)</label>
+              <input type="text" id="cardExp" placeholder="12/28" maxlength="5" required />
+              <small class="field-error" id="errCardExp"></small>
+            </div>
+            <div class="form-group-checkout">
+              <label for="cardCvv">CVV</label>
+              <input type="password" id="cardCvv" placeholder="123" maxlength="3" required />
+              <small class="field-error" id="errCardCvv"></small>
+            </div>
+          </div>
+
+          <div class="checkout-actions">
+            <button type="button" class="btn btn-secondary" id="btnBackToCart">← Volver</button>
+            <button type="submit" class="btn btn-green" id="btnConfirmOrder">
+              Pagar y Confirmar
+            </button>
+          </div>
+        </form>
+
+        <!-- Vista 3: Confirmación Exitosa -->
+        <div id="orderSuccessView" style="display: none; text-align: center;">
+        <div class="success-icon-box">
+            <i data-lucide="check-circle-2"></i>
+        </div>
+        <h3>¡Pedido Confirmado!</h3>
+        <p>Código: <strong id="successOrderCode">ORD-2026-XXXX</strong></p>
+        <p class="success-desc">
+            Tu compra ya fue registrada en nuestro sistema y está en proceso de empaque. Nuestro repartidor se encargará del delivery.
+        </p>
+
+        <!-- Tarjeta informativa de WhatsApp Opcional -->
+        <div class="whatsapp-optional-card">
+            <div class="optional-badge">Paso Opcional</div>
+            <p class="optional-text">
+            ¿Deseas enviar instrucciones de entrega o consultar el estado en tiempo real? Puedes escribirnos directamente:
+            </p>
+            <a href="#" target="_blank" class="btn btn-green w-100" id="btnWhatsAppNotify">
+            <i data-lucide="message-circle"></i> Notificar por WhatsApp
+            </a>
+        </div>
+
+        <button class="btn btn-secondary w-100 mt-3" id="btnFinishOrder">Finalizar y Cerrar</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

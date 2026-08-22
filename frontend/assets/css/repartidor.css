@@ -1,0 +1,252 @@
+:root {
+  --primary-blue: #0066f5;
+  --accent-green: #10b981;
+  --accent-green-hover: #059669;
+  --text-dark: #0f172a;
+  --text-muted: #64748b;
+  --bg-color: #f8fafc;
+  --card-bg: #ffffff;
+  --border-color: #e2e8f0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-dark);
+  padding-bottom: 40px;
+}
+
+.container {
+  max-width: 600px; /* Optimizado para Smartphones y Tablets */
+  margin: 0 auto;
+  padding: 16px;
+}
+
+/* Header Móvil */
+.driver-header {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.header-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.driver-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  background: #eff6ff;
+  color: var(--primary-blue);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.driver-name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.status-indicator {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status-indicator.online { color: var(--accent-green); }
+
+.btn-exit {
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--bg-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tabs de Filtro */
+.status-tabs {
+  display: flex;
+  background: #e2e8f0;
+  padding: 4px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: var(--primary-blue);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+/* Tarjetas de Pedido */
+.orders-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.order-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.order-id {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.order-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.badge-state {
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.badge-state.route { background: #e0f2fe; color: #0284c7; }
+.badge-state.ready { background: #fef3c7; color: #b45309; }
+.badge-state.done { background: #dcfce7; color: #15803d; }
+
+.customer-info {
+  background: var(--bg-color);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.info-row:last-child { margin-bottom: 0; }
+.info-row svg { width: 16px; height: 16px; color: var(--text-muted); flex-shrink: 0; }
+
+.order-items {
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 12px;
+}
+
+.order-items ul {
+  list-style: none;
+  margin-top: 6px;
+}
+
+.order-items li {
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.order-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+.order-total-row strong {
+  font-size: 1.2rem;
+  color: var(--primary-blue);
+}
+
+/* Botonera de Acción para el Repartidor */
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.btn-action-driver {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-whatsapp {
+  background: #25d366;
+  color: #ffffff;
+}
+
+.btn-call {
+  background: #f1f5f9;
+  color: var(--text-dark);
+}
+
+.btn-status-change {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-start-route { background: var(--primary-blue); color: #fff; }
+.btn-finish-delivery { background: var(--accent-green); color: #fff; }

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Repartidor - Mery Salud</title>
+  <link rel="stylesheet" href="assets/css/repartidor.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <!-- Barra Superior Móvil -->
+  <header class="driver-header">
+    <div class="header-container">
+      <div class="driver-profile">
+        <div class="avatar"><i data-lucide="bike"></i></div>
+        <div>
+          <h2 class="driver-name">Carlos Repartidor</h2>
+          <span class="status-indicator online">● En Servicio</span>
+        </div>
+      </div>
+      <a href="index.html" class="btn-exit" title="Salir"><i data-lucide="log-out"></i></a>
+    </div>
+  </header>
+
+  <!-- Contenedor Principal -->
+  <main class="driver-main container">
+    
+    <!-- Filtro de Estados -->
+    <nav class="status-tabs" aria-label="Filtro de Entregas">
+      <button class="tab-btn active" data-filter="all">Todos (<span id="countAll">3</span>)</button>
+      <button class="tab-btn" data-filter="EN_CAMINO">En Ruta (<span id="countRoute">1</span>)</button>
+      <button class="tab-btn" data-filter="ENTREGADO">Entregados (<span id="countDone">1</span>)</button>
+    </nav>
+
+    <!-- Lista Dinámica de Pedidos -->
+    <section class="orders-feed" id="ordersFeed">
+      <!-- Inyección dinámica vía JavaScript -->
+    </section>
+
+  </main>
+
+  <script src="assets/js/repartidor.js"></script>
+</body>
+</html>

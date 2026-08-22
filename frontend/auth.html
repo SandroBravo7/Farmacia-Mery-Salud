@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acceso - Mery Salud</title>
+  <link rel="stylesheet" href="assets/css/auth.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Librería Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+  <main class="auth-container">
+    <!-- Panel Izquierdo: Branding -->
+    <aside class="auth-hero">
+      <header class="hero-brand">
+        <div class="brand-badge-icon"><i data-lucide="plus"></i></div>
+        <div>
+          <h1 class="brand-name">Mery Salud</h1>
+          <span class="brand-tagline">FARMACIA INTELIGENTE</span>
+        </div>
+      </header>
+
+      <div class="hero-content">
+        <h2 class="hero-title">Tu bienestar, respaldado por la ciencia y la tecnología</h2>
+        <p class="hero-description">
+          Gestiona tus recetas, consulta disponibilidad en tiempo real y recibe tus medicamentos en la comodidad de tu hogar de forma rápida y segura.
+        </p>
+
+        <ul class="hero-features">
+          <li>
+            <span class="check-circle"><i data-lucide="check"></i></span>
+            <div>
+              <strong>Entregas en tiempo récord</strong>
+              <p>Despacho directo en menos de 2 horas en zonas urbanas.</p>
+            </div>
+          </li>
+          <li>
+            <span class="check-circle"><i data-lucide="check"></i></span>
+            <div>
+              <strong>Recetas electrónicas</strong>
+              <p>Vinculación directa con tu sistema de salud.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <footer class="hero-footer">
+        <small>© 2026 Mery Salud. Todos los derechos reservados.</small>
+        <a href="index.html" class="back-link"><i data-lucide="arrow-left"></i> Volver al Inicio</a>
+      </footer>
+    </aside>
+
+    <!-- Panel Derecho: Formulario -->
+    <section class="auth-form-wrapper">
+      <div class="auth-card">
+        
+        <header class="card-header">
+          <h2 class="form-title">Crea tu cuenta</h2>
+          <p class="form-subtitle">Únete a Mery Salud y gestiona tu salud inteligentemente.</p>
+          
+          <nav class="auth-tabs" aria-label="Selector de autenticación">
+            <button type="button" class="tab-item" id="tabLogin">Iniciar Sesión</button>
+            <button type="button" class="tab-item active" id="tabRegister">Registrarse</button>
+          </nav>
+        </header>
+
+        <form class="auth-form" id="authForm" action="#" method="POST">
+          <div class="form-group" id="groupFullname">
+            <label for="fullname">Nombre completo</label>
+            <div class="input-container">
+              <span class="field-icon"><i data-lucide="user"></i></span>
+              <input type="text" id="fullname" name="fullname" placeholder="Ej. María García Rodríguez" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Correo electrónico</label>
+            <div class="input-container">
+              <span class="field-icon"><i data-lucide="mail"></i></span>
+              <input type="email" id="email" name="email" placeholder="correo@ejemplo.com" required />
+            </div>
+          </div>
+
+          <div class="form-group" id="groupPhone">
+            <label for="phone">Número telefónico</label>
+            <div class="input-container">
+              <span class="field-icon"><i data-lucide="phone"></i></span>
+              <input type="tel" id="phone" name="phone" placeholder="+51 987 654 321" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <div class="input-container">
+              <span class="field-icon"><i data-lucide="lock"></i></span>
+              <input type="password" id="password" name="password" placeholder="Mínimo 8 caracteres" required />
+              <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                <i data-lucide="eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group" id="groupConfirmPassword">
+            <label for="confirmPassword">Confirmar contraseña</label>
+            <div class="input-container">
+              <span class="field-icon"><i data-lucide="lock"></i></span>
+              <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Repite tu contraseña" />
+              <button type="button" class="toggle-password" aria-label="Mostrar contraseña">
+                <i data-lucide="eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Opciones extras en Login -->
+          <div class="form-options" id="loginOptions" style="display: none;">
+            <label class="checkbox-label">
+              <input type="checkbox" name="remember" /> Recordarme
+            </label>
+            <a href="#" class="forgot-link">¿Olvidaste tu contraseña?</a>
+          </div>
+
+          <button type="submit" class="btn-primary" id="btnSubmit">Crear Cuenta</button>
+        </form>
+
+        <footer class="card-footer">
+          <p id="footerText">¿Ya tienes una cuenta? <a href="#" id="linkToggleAuth">Inicia sesión</a></p>
+        </footer>
+
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/js/auth.js"></script>
+</body>
+</html>

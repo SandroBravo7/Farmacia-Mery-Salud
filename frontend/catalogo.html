@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo de Productos - Mery Salud</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="catalog-page">
+
+  <!-- Navbar -->
+  <header class="navbar-container">
+    <div class="navbar-top container">
+      <a href="index.html" class="brand-logo">
+        <div class="brand-icon"><i data-lucide="plus"></i></div>
+        <div class="brand-text">
+          <span class="brand-name">Mery Salud</span>
+          <span class="brand-sub">FARMACIA INTELIGENTE</span>
+        </div>
+      </a>
+
+      <div class="search-bar">
+        <i data-lucide="search" class="search-icon"></i>
+        <input type="text" id="catalogSearchInput" placeholder="Buscar medicamentos, principios activos o síntomas..." />
+      </div>
+
+      <div class="nav-actions">
+        <a href="index.html" class="btn btn-secondary btn-sm"><i data-lucide="arrow-left"></i> Inicio</a>
+        <a href="#" class="nav-cart" id="cartBtn" title="Ver Carrito">
+          <i data-lucide="shopping-cart"></i>
+          <span class="cart-badge" id="cartCount">0</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout Principal de Catálogo -->
+  <main class="catalog-main container">
+    
+    <!-- Sidebar de Filtros (Estilo E-Commerce) -->
+    <aside class="catalog-sidebar">
+      <div class="sidebar-header">
+        <h3><i data-lucide="sliders-horizontal"></i> Filtros</h3>
+        <button id="btnResetFilters" class="btn-link">Limpiar</button>
+      </div>
+
+      <!-- Filtro por Categorías -->
+      <div class="filter-group">
+        <h4>Categorías</h4>
+        <label class="filter-checkbox">
+          <input type="radio" name="filterCat" value="ALL" checked />
+          <span>Todas las categorías</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="radio" name="filterCat" value="1" />
+          <span>Medicamentos & Recetas</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="radio" name="filterCat" value="2" />
+          <span>Cuidado Personal & Higiene</span>
+        </label>
+        <label class="filter-checkbox">
+          <input type="radio" name="filterCat" value="3" />
+          <span>Bienestar & Nutrición</span>
+        </label>
+      </div>
+
+      <!-- Filtro por Tipo de Venta -->
+      <div class="filter-group">
+        <h4>Condición Médica</h4>
+        <label class="filter-checkbox">
+          <input type="checkbox" id="filterPrescription" />
+          <span>Solo con receta médica</span>
+        </label>
+      </div>
+
+      <!-- Rango de Precio -->
+      <div class="filter-group">
+        <h4>Precio Máximo</h4>
+        <div class="price-slider-box">
+          <input type="range" id="priceRange" min="5" max="100" step="1" value="100" />
+          <div class="price-range-labels">
+            <span>S/ 5.00</span>
+            <strong id="priceRangeValue">Hasta S/ 100.00</strong>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Área de Resultados y Cuadrícula -->
+    <section class="catalog-content">
+      <div class="catalog-top-bar">
+        <div>
+          <h1 class="catalog-title">Todos los Productos</h1>
+          <p class="catalog-counter" id="catalogCount">Mostrando productos disponibles</p>
+        </div>
+
+        <div class="catalog-sort">
+          <label for="sortBy">Ordenar por:</label>
+          <select id="sortBy">
+            <option value="featured">Destacados</option>
+            <option value="price-asc">Precio: Menor a Mayor</option>
+            <option value="price-desc">Precio: Mayor a Menor</option>
+            <option value="name-asc">Nombre: A - Z</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Grid de Productos -->
+      <div class="products-grid catalog-grid" id="catalogProductsGrid">
+        <!-- Renderizado dinámico vía JavaScript -->
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal Flotante de Carrito / Checkout -->
+  <div class="cart-modal-overlay" id="cartModal">
+    <div class="cart-modal-container">
+      <div class="cart-modal-header">
+        <div class="header-title-box">
+          <i data-lucide="shopping-bag"></i>
+          <h3>Tu Carrito de Compras</h3>
+        </div>
+        <button class="btn-close-cart" id="closeCartBtn">&times;</button>
+      </div>
+
+      <div class="cart-modal-body">
+        <div id="cartViewItems">
+          <div class="cart-items-list" id="cartItemsList"></div>
+          <div class="cart-summary-box">
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <strong id="cartSubtotal">S/ 0.00</strong>
+            </div>
+            <div class="summary-row">
+              <span>Costo de Envío:</span>
+              <strong id="cartShipping">S/ 5.00</strong>
+            </div>
+            <div class="summary-row total">
+              <span>Total a Pagar:</span>
+              <strong id="cartTotal">S/ 0.00</strong>
+            </div>
+          </div>
+          <button class="btn btn-blue w-100" id="btnGoToCheckout" disabled>
+            Continuar al Checkout <i data-lucide="arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Formulario Checkout -->
+        <form id="checkoutForm" style="display: none;" novalidate>
+          <h4 class="checkout-subtitle">Datos de Entrega</h4>
+          <div class="form-group-checkout">
+            <label for="orderName">Nombre Completo</label>
+            <input type="text" id="orderName" required />
+          </div>
+          <div class="form-group-checkout">
+            <label for="orderPhone">Teléfono (9 dígitos)</label>
+            <input type="tel" id="orderPhone" maxlength="9" required />
+          </div>
+          <div class="form-group-checkout">
+            <label for="orderEmail">Correo Electrónico</label>
+            <input type="email" id="orderEmail" required />
+          </div>
+          <div class="form-group-checkout">
+            <label for="orderAddress">Dirección</label>
+            <input type="text" id="orderAddress" required />
+          </div>
+          <div class="checkout-actions">
+            <button type="button" class="btn btn-secondary" id="btnBackToCart">← Volver</button>
+            <button type="submit" class="btn btn-green">Pagar y Confirmar</button>
+          </div>
+        </form>
+
+        <div id="orderSuccessView" style="display: none; text-align: center;">
+          <div class="success-icon-box"><i data-lucide="check-circle-2"></i></div>
+          <h3>¡Pedido Confirmado!</h3>
+          <p>Código: <strong id="successOrderCode">ORD-2026-XXXX</strong></p>
+          <button class="btn btn-secondary w-100 mt-3" id="btnFinishOrder">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/catalogo.js"></script>
+</body>
+</html>
