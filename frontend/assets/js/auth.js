@@ -1,10 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Inicializar íconos Lucide
   if (window.lucide) {
     lucide.createIcons();
   }
 
-  // 1. Mostrar / Ocultar contraseñas cambiando el ícono
+  let currentMode = 'login'; // Iniciamos por defecto en modo Login
+
+  // 1. Mostrar / Ocultar contraseñas
   const toggleButtons = document.querySelectorAll('.toggle-password');
   toggleButtons.forEach(button => {
     button.addEventListener('click', () => {
@@ -20,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 2. Conmutación dinámica entre Login y Register
+  // 2. Elementos del DOM
   const tabLogin = document.getElementById('tabLogin');
   const tabRegister = document.getElementById('tabRegister');
   const formTitle = document.querySelector('.form-title');
@@ -31,55 +32,145 @@ document.addEventListener('DOMContentLoaded', () => {
   const groupPhone = document.getElementById('groupPhone');
   const groupConfirmPassword = document.getElementById('groupConfirmPassword');
   const loginOptions = document.getElementById('loginOptions');
+  const authForm = document.getElementById('authForm');
+
+  const emailInput = document.getElementById('email');
+  const passwordInput = document.getElementById('password');
 
   function renderView(mode) {
+    currentMode = mode;
     if (mode === 'register') {
-      tabRegister.classList.add('active');
-      tabLogin.classList.remove('active');
+      if (tabRegister) tabRegister.classList.add('active');
+      if (tabLogin) tabLogin.classList.remove('active');
 
-      formTitle.textContent = 'Crea tu cuenta';
-      formSubtitle.textContent = 'Únete a Mery Salud y gestiona tu salud inteligentemente.';
-      btnSubmit.textContent = 'Crear Cuenta';
+      if (formTitle) formTitle.textContent = 'Crea tu cuenta';
+      if (formSubtitle) formSubtitle.textContent = 'Únete a Mery Salud y gestiona tu salud inteligentemente.';
+      if (btnSubmit) btnSubmit.textContent = 'Crear Cuenta';
 
-      groupFullname.style.display = 'flex';
-      groupPhone.style.display = 'flex';
-      groupConfirmPassword.style.display = 'flex';
-      loginOptions.style.display = 'none';
+      if (groupFullname) groupFullname.style.display = 'flex';
+      if (groupPhone) groupPhone.style.display = 'flex';
+      if (groupConfirmPassword) groupConfirmPassword.style.display = 'flex';
+      if (loginOptions) loginOptions.style.display = 'none';
 
-      footerText.innerHTML = '¿Ya tienes una cuenta? <a href="#" id="linkToggleAuth">Inicia sesión</a>';
+      if (footerText) footerText.innerHTML = '¿Ya tienes una cuenta? <a href="#" id="linkToggleAuth">Inicia sesión</a>';
     } else {
-      tabLogin.classList.add('active');
-      tabRegister.classList.remove('active');
+      if (tabLogin) tabLogin.classList.add('active');
+      if (tabRegister) tabRegister.classList.remove('active');
 
-      formTitle.textContent = 'Bienvenido de nuevo';
-      formSubtitle.textContent = 'Ingresa tus credenciales para acceder a tu panel.';
-      btnSubmit.textContent = 'Iniciar Sesión';
+      if (formTitle) formTitle.textContent = 'Bienvenido de nuevo';
+      if (formSubtitle) formSubtitle.textContent = 'Ingresa tus credenciales para acceder a tu panel.';
+      if (btnSubmit) btnSubmit.textContent = 'Iniciar Sesión';
 
-      groupFullname.style.display = 'none';
-      groupPhone.style.display = 'none';
-      groupConfirmPassword.style.display = 'none';
-      loginOptions.style.display = 'flex';
+      if (groupFullname) groupFullname.style.display = 'none';
+      if (groupPhone) groupPhone.style.display = 'none';
+      if (groupConfirmPassword) groupConfirmPassword.style.display = 'none';
+      if (loginOptions) loginOptions.style.display = 'flex';
 
-      footerText.innerHTML = '¿No tienes una cuenta? <a href="#" id="linkToggleAuth">Regístrate gratis</a>';
+      if (footerText) footerText.innerHTML = '¿No tienes una cuenta? <a href="#" id="linkToggleAuth">Regístrate gratis</a>';
     }
 
-    // Reasignar evento al link del footer
-    document.getElementById('linkToggleAuth').addEventListener('click', (e) => {
-      e.preventDefault();
-      renderView(mode === 'register' ? 'login' : 'register');
-    });
+    const newLink = document.getElementById('linkToggleAuth');
+    if (newLink) {
+      newLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        renderView(currentMode === 'register' ? 'login' : 'register');
+      });
+    }
 
     if (window.lucide) lucide.createIcons();
   }
 
-  tabLogin.addEventListener('click', () => renderView('login'));
-  tabRegister.addEventListener('click', () => renderView('register'));
+  if (tabLogin) tabLogin.addEventListener('click', () => renderView('login'));
+  if (tabRegister) tabRegister.addEventListener('click', () => renderView('register'));
 
-  const linkToggle = document.getElementById('linkToggleAuth');
-  if (linkToggle) {
-    linkToggle.addEventListener('click', (e) => {
+  // Iniciar por defecto en la vista de Login
+  renderView('login');
+
+  // 3. Envío y Conexión con Spring Boot (/api/auth/login y /api/auth/register)
+  if (authForm) {
+    authForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      renderView('login');
+
+      const email = emailInput ? emailInput.value.trim() : '';
+      const password = passwordInput ? passwordInput.value : '';
+
+      if (!email || !password) {
+        alert('Por favor ingresa tu correo y contraseña.');
+        return;
+      }
+
+      if (currentMode === 'login') {
+        try {
+          const res = await fetch('http://localhost:8080/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+
+          if (!res.ok) {
+            const errorMsg = await res.text();
+            alert(errorMsg || 'Credenciales incorrectas.');
+            return;
+          }
+
+          const userData = await res.json();
+          localStorage.setItem('merysalud_user', JSON.stringify(userData));
+
+          // Redirección condicional según el rol
+          if (userData.rol === 'ADMIN') {
+            window.location.href = 'admin.html';
+          } else if (userData.rol === 'REPARTIDOR') {
+            window.location.href = 'repartidor.html';
+          } else {
+            window.location.href = 'index.html';
+          }
+
+        } catch (err) {
+          console.error('Error de conexión:', err);
+          alert('No se pudo conectar con el servidor en el puerto 8080.');
+        }
+      } else {
+        // Modo Registro de Clientes
+        const nombre = groupFullname ? groupFullname.querySelector('input')?.value.trim() : '';
+        const telefono = groupPhone ? groupPhone.querySelector('input')?.value.trim() : '';
+        const confirmPassword = groupConfirmPassword ? groupConfirmPassword.querySelector('input')?.value : '';
+
+        if (!nombre || nombre.length < 3) {
+          alert('Por favor ingresa tu nombre completo.');
+          return;
+        }
+
+        if (password !== confirmPassword) {
+          alert('Las contraseñas no coinciden.');
+          return;
+        }
+
+        try {
+          const res = await fetch('http://localhost:8080/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              nombre,
+              email,
+              password,
+              telefono
+            })
+          });
+
+          if (res.ok) {
+            const userData = await res.json();
+            localStorage.setItem('merysalud_user', JSON.stringify(userData));
+            alert('¡Cuenta creada exitosamente! Bienvenido a Mery Salud.');
+            window.location.href = 'index.html';
+          } else {
+            const errorMsg = await res.text();
+            alert(`Error al registrarse: ${errorMsg}`);
+          }
+        } catch (err) {
+          console.error('Error al registrar usuario:', err);
+          alert('No se pudo conectar con el servidor para registrar la cuenta.');
+        }
+      }
     });
   }
 });

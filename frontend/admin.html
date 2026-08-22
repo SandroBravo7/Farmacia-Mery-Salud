@@ -13,7 +13,7 @@
 <body>
 
   <div class="admin-wrapper">
-    <!-- Barra Lateral (Sidebar) -->
+    <!-- Barra Lateral -->
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-brand">
         <div class="brand-icon"><i data-lucide="plus"></i></div>
@@ -24,14 +24,15 @@
       </div>
 
       <nav class="sidebar-nav">
-        <button class="nav-btn active" data-view="products">
+        <button class="nav-btn" data-view="products">
           <i data-lucide="package"></i> Productos & Stock
         </button>
         <button class="nav-btn" data-view="orders">
           <i data-lucide="shopping-bag"></i> Gestión de Pedidos
         </button>
         <button class="nav-btn" data-view="users">
-          <i data-lucide="users"></i> Usuarios & Roles
+          <i data-lucide="users"></i>
+          <span>Usuarios & Personal</span>
         </button>
       </nav>
 
@@ -44,7 +45,6 @@
 
     <!-- Contenido Principal -->
     <main class="main-content">
-      <!-- Topbar -->
       <header class="topbar">
         <button class="menu-toggle" id="menuToggle" aria-label="Abrir Menú">
           <i data-lucide="menu"></i>
@@ -59,34 +59,32 @@
         </div>
       </header>
 
-      <!-- SECCIÓN: GESTIÓN DE PRODUCTOS (RF08) -->
-      <section class="admin-section active" id="view-products">
-        <!-- Métricas Rápidas -->
+      <!-- SECCIÓN 1: PRODUCTOS -->
+      <section class="admin-section" id="view-products">
         <div class="metrics-grid">
           <div class="metric-card">
             <div class="metric-icon blue"><i data-lucide="boxes"></i></div>
             <div>
-              <span class="metric-val" id="totalProducts">4</span>
+              <span class="metric-val" id="totalProducts">0</span>
               <span class="metric-lbl">Total Productos</span>
             </div>
           </div>
           <div class="metric-card">
             <div class="metric-icon green"><i data-lucide="check-circle-2"></i></div>
             <div>
-              <span class="metric-val">3</span>
+              <span class="metric-val" id="inStockProducts">0</span>
               <span class="metric-lbl">En Stock</span>
             </div>
           </div>
           <div class="metric-card">
             <div class="metric-icon amber"><i data-lucide="alert-triangle"></i></div>
             <div>
-              <span class="metric-val">1</span>
-              <span class="metric-lbl">Stock Bajo / Crítico</span>
+              <span class="metric-val" id="lowStockProducts">0</span>
+              <span class="metric-lbl">Stock Bajo (&le; 5)</span>
             </div>
           </div>
         </div>
 
-        <!-- Barra de Acciones y Filtros -->
         <div class="table-actions">
           <div class="search-box">
             <i data-lucide="search"></i>
@@ -97,7 +95,6 @@
           </button>
         </div>
 
-        <!-- Tabla Responsive de Productos -->
         <div class="table-container">
           <table class="data-table" id="productsTable">
             <thead>
@@ -111,14 +108,12 @@
                 <th>Acciones</th>
               </tr>
             </thead>
-            <tbody id="productsTbody">
-              <!-- Renderizado dinámico vía JS -->
-            </tbody>
+            <tbody id="productsTbody"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- SECCIÓN: GESTIÓN DE PEDIDOS (RF06) -->
+      <!-- SECCIÓN 2: PEDIDOS -->
       <section class="admin-section" id="view-orders">
         <div class="table-container">
           <table class="data-table">
@@ -128,36 +123,56 @@
                 <th>Cliente</th>
                 <th>Dirección</th>
                 <th>Total</th>
-                <th>Receta</th>
+                <th>Tipo</th>
                 <th>Estado</th>
-                <th>Acción</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody id="ordersTbody">
               <tr>
                 <td><strong>ORD-2026-001</strong></td>
                 <td>Juan Pérez<br><small>+51 912 345 678</small></td>
                 <td>Av. Universitaria 450, SMP</td>
                 <td><strong>S/ 31.40</strong></td>
-                <td><span class="badge-tag green">Validada</span></td>
+                <td><span class="badge-tag green">DELIVERY</span></td>
                 <td><span class="status-badge pending">Pendiente</span></td>
-                <td>
-                  <select class="status-select">
-                    <option value="PENDIENTE" selected>Pendiente</option>
-                    <option value="EN_PREPARACION">En Preparación</option>
-                    <option value="EN_CAMINO">En Camino</option>
-                    <option value="ENTREGADO">Entregado</option>
-                  </select>
-                </td>
               </tr>
             </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECCIÓN 3: USUARIOS & PERSONAL -->
+      <section class="admin-section" id="view-users">
+        <div class="table-actions">
+          <div class="search-box">
+            <i data-lucide="search"></i>
+            <input type="text" id="filterUsersInput" placeholder="Buscar por nombre o correo electrónico..." />
+          </div>
+          <button class="btn btn-primary" id="openAddUserModalBtn">
+            <i data-lucide="user-plus"></i> Registrar Usuario
+          </button>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre Completo</th>
+                <th>Correo Electrónico</th>
+                <th>Teléfono</th>
+                <th>Rol</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody"></tbody>
           </table>
         </div>
       </section>
     </main>
   </div>
 
-  <!-- MODAL: AGREGAR / EDITAR PRODUCTO (RF08) -->
+  <!-- MODAL: PRODUCTOS -->
   <div class="modal-overlay" id="productModal">
     <div class="modal-card">
       <div class="modal-header">
@@ -167,7 +182,6 @@
 
       <form id="productForm">
         <input type="hidden" id="prodId" />
-
         <div class="form-row">
           <div class="form-group">
             <label for="prodName">Nombre comercial</label>
@@ -183,10 +197,9 @@
           <div class="form-group">
             <label for="prodCategory">Categoría</label>
             <select id="prodCategory" required>
-              <option value="Medicamentos">Medicamentos</option>
-              <option value="Primeros Auxilios">Primeros Auxilios</option>
-              <option value="Adulto Mayor">Adulto Mayor & Crónicos</option>
-              <option value="Cuidado Personal">Cuidado Personal</option>
+              <option value="1">Medicamentos</option>
+              <option value="2">Cuidado Personal</option>
+              <option value="3">Bienestar & Nutrición</option>
             </select>
           </div>
           <div class="form-group">
@@ -196,14 +209,14 @@
         </div>
 
         <div class="form-row">
-        <div class="form-group">
+          <div class="form-group">
             <label for="prodPrice">Precio (S/)</label>
             <input type="number" step="0.10" min="0.10" id="prodPrice" required placeholder="12.90" />
-        </div>
-        <div class="form-group">
+          </div>
+          <div class="form-group">
             <label for="prodStock">Stock actual</label>
             <input type="number" step="1" min="0" id="prodStock" required placeholder="50" />
-        </div>
+          </div>
         </div>
 
         <div class="form-group-checkbox">
@@ -216,6 +229,54 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" id="cancelModalBtn">Cancelar</button>
           <button type="submit" class="btn btn-primary">Guardar Producto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: USUARIOS -->
+  <div class="modal-overlay" id="userModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Registrar Usuario / Personal</h3>
+        <button class="close-modal" id="closeUserModalBtn">&times;</button>
+      </div>
+
+      <form id="userAdminForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="newUserName">Nombre completo</label>
+            <input type="text" id="newUserName" required placeholder="Ej. Carlos Mendoza" />
+          </div>
+          <div class="form-group">
+            <label for="newUserEmail">Correo electrónico</label>
+            <input type="email" id="newUserEmail" required placeholder="ejemplo@merysalud.pe" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="newUserPhone">Teléfono</label>
+            <input type="tel" id="newUserPhone" maxlength="9" placeholder="987654321" />
+          </div>
+          <div class="form-group">
+            <label for="newUserRole">Rol Asignado</label>
+            <select id="newUserRole">
+              <option value="2">Repartidor (ROLE_REPARTIDOR)</option>
+              <option value="3">Cliente (ROLE_CLIENTE)</option>
+              <option value="1">Administrador (ROLE_ADMIN)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="newUserPassword">Contraseña Inicial</label>
+          <input type="password" id="newUserPassword" required placeholder="Mínimo 6 caracteres" />
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="cancelUserModalBtn">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar Usuario</button>
         </div>
       </form>
     </div>

@@ -377,6 +377,70 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // 9. Manejo de Sesión de Usuario en Navbar
+  function renderUserSessionNavbar() {
+    const navActions = document.querySelector('.nav-actions');
+    const userSession = JSON.parse(localStorage.getItem('merysalud_user'));
+
+    if (!navActions || !userSession || !userSession.nombre) return;
+
+    const existingUserLink = navActions.querySelector('.nav-user') || navActions.querySelector('.user-menu-wrapper');
+    const initial = userSession.nombre.charAt(0).toUpperCase();
+    const firstName = userSession.nombre.split(' ')[0];
+
+    const userHtml = `
+      <div class="user-menu-wrapper">
+        <button type="button" class="user-profile-btn" id="userMenuBtn">
+          <div class="user-avatar-circle">${initial}</div>
+          <span>${firstName}</span>
+          <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
+        </button>
+        
+        <div class="user-dropdown-card" id="userDropdown">
+          <div class="user-info-head">
+            <strong>${userSession.nombre}</strong>
+            <span>${userSession.email}</span>
+            <span class="user-role-tag">${userSession.rol}</span>
+          </div>
+          ${userSession.rol === 'ADMIN' ? '<a href="admin.html" class="btn btn-secondary w-100 mb-2" style="font-size:0.8rem; margin-bottom:8px; display:block; text-align:center;">Panel Admin</a>' : ''}
+          <button type="button" class="btn-logout" id="btnLogoutSession">
+            <i data-lucide="log-out" style="width: 14px; height: 14px;"></i> Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    `;
+
+    if (existingUserLink) {
+      existingUserLink.outerHTML = userHtml;
+    } else {
+      navActions.insertAdjacentHTML('beforeend', userHtml);
+    }
+
+    const btnMenu = document.getElementById('userMenuBtn');
+    const dropdown = document.getElementById('userDropdown');
+    const btnLogout = document.getElementById('btnLogoutSession');
+
+    if (btnMenu && dropdown) {
+      btnMenu.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+      });
+
+      document.addEventListener('click', () => dropdown.classList.remove('open'));
+    }
+
+    if (btnLogout) {
+      btnLogout.addEventListener('click', () => {
+        localStorage.removeItem('merysalud_user');
+        window.location.reload();
+      });
+    }
+
+    if (window.lucide) lucide.createIcons();
+  }
+
+  renderUserSessionNavbar();
+
   loadProductsFromBackend();
   updateCartUI();
 });
