@@ -65,7 +65,46 @@ MerySalud/
 
 ---
 
-## Configuración y Ejecución
+## Guía de Trabajo Colaborativo (Para el Equipo de Desarrollo)
+
+Para mantener la rama `main` siempre estable y funcional, **queda prohibido realizar commits directos sobre `main`**. Todo el equipo debe seguir este flujo:
+
+### 1. Clonar el repositorio por primera vez
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd MerySalud
+```
+
+### 2. Crear una rama de trabajo individual
+Cada integrante debe crear una rama con la nomenclatura `feature/nombre-tarea` o `desarrollador/NombreApellido`:
+```bash
+git checkout main
+git pull origin main
+git checkout -b desarrollador/TuNombre
+```
+
+### 3. Flujo diario de trabajo y subida de cambios
+```bash
+# Guardar cambios locales
+git add .
+git commit -m "feat: descripcion clara del avance realizado"
+
+# Subir tu rama a GitHub
+git push origin desarrollador/TuNombre
+```
+
+### 4. Mantener tu rama actualizada con `main`
+Antes de integrar cambios, trae lo último que otros compañeros hayan subido a `main`:
+```bash
+git checkout main
+git pull origin main
+git checkout desarrollador/TuNombre
+git merge main
+```
+
+---
+
+## Configuración y Ejecución Local
 
 ### 1. Base de Datos (MySQL)
 
@@ -87,14 +126,13 @@ Abre una terminal en la carpeta `backend`:
 cd backend
 ./mvnw spring-boot:run
 ```
-
-*(En Windows Command Prompt puedes usar `mvnw.cmd spring-boot:run`)*
+*(En Windows CMD: `mvnw.cmd spring-boot:run`)*
 
 El servidor iniciará en: `http://localhost:8080`
 
 ### 3. Iniciar Frontend
 
-Abre la carpeta `frontend/` mediante **Live Server** en VS Code o ejecutando cualquier servidor estático local (puerto `5500` / `3000`).
+Abre la carpeta `frontend/` mediante la extensión **Live Server** en VS Code o ejecutando cualquier servidor local en los puertos `5500` / `3000`.
 
 ---
 
