@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="assets/css/ui.css" />
 </head>
 <body>
 
@@ -18,22 +19,23 @@
       <div class="driver-profile">
         <div class="avatar"><i data-lucide="bike"></i></div>
         <div>
-          <h2 class="driver-name">Carlos Repartidor</h2>
+          <h2 class="driver-name">Mi cuenta</h2>
           <span class="status-indicator online">● En Servicio</span>
         </div>
       </div>
-      <a href="index.html" class="btn-exit" title="Salir"><i data-lucide="log-out"></i></a>
+      <a href="index.html" class="btn-exit" title="Cerrar sesión" data-logout><i data-lucide="log-out"></i></a>
     </div>
   </header>
 
   <!-- Contenedor Principal -->
   <main class="driver-main container">
     
+    <h1>Mis entregas</h1><p class="page-intro">Revisa el destino y actualiza cada entrega.</p>
     <!-- Filtro de Estados -->
     <nav class="status-tabs" aria-label="Filtro de Entregas">
-      <button class="tab-btn active" data-filter="all">Todos (<span id="countAll">3</span>)</button>
-      <button class="tab-btn" data-filter="EN_CAMINO">En Ruta (<span id="countRoute">1</span>)</button>
-      <button class="tab-btn" data-filter="ENTREGADO">Entregados (<span id="countDone">1</span>)</button>
+      <button class="tab-btn active" data-filter="all">Todos (<span id="countAll">0</span>)</button>
+      <button class="tab-btn" data-filter="EN_RUTA">En Ruta (<span id="countRoute">0</span>)</button>
+      <button class="tab-btn" data-filter="ENTREGADO">Entregados (<span id="countDone">0</span>)</button>
     </nav>
 
     <!-- Lista Dinámica de Pedidos -->
@@ -43,6 +45,7 @@
 
   </main>
 
+  <script src="assets/js/shared.js"></script>
   <script src="assets/js/repartidor.js"></script>
 </body>
 </html>

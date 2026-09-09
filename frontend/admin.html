@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="assets/css/ui.css" />
 </head>
 <body>
 
@@ -30,13 +31,14 @@
         <button class="nav-btn" data-view="orders">
           <i data-lucide="shopping-bag"></i> Gestión de Pedidos
         </button>
+        <button class="nav-btn" data-view="categories">Categorías</button>
         <button class="nav-btn" data-view="users">
           <i data-lucide="users"></i>
           <span>Usuarios & Personal</span>
         </button>
       </nav>
 
-      <div class="sidebar-footer">
+      <div class="sidebar-footer"><a href="auth.html" data-logout class="logout-link">Cerrar sesión</a>
         <a href="index.html" class="logout-link">
           <i data-lucide="log-out"></i> Volver a la Tienda
         </a>
@@ -114,7 +116,7 @@
       </section>
 
       <!-- SECCIÓN 2: PEDIDOS -->
-      <section class="admin-section" id="view-orders">
+      <section class="admin-section" id="view-orders"><div class="table-actions"><label>Filtrar pedidos <select id="orderFilter"><option value="">Todos</option><option value="PENDIENTE">En revisión</option><option value="ASIGNADO">Asignados</option><option value="EN_RUTA">En ruta</option><option value="ENTREGADO">Entregados</option><option value="LISTO_RECOJO">Listos para recoger</option><option value="CANCELADO">Cancelados</option></select></label><span id="orderSummary"></span></div>
         <div class="table-container">
           <table class="data-table">
             <thead>
@@ -124,19 +126,10 @@
                 <th>Dirección</th>
                 <th>Total</th>
                 <th>Tipo</th>
-                <th>Estado</th>
+                <th>Estado / Acciones</th>
               </tr>
             </thead>
-            <tbody id="ordersTbody">
-              <tr>
-                <td><strong>ORD-2026-001</strong></td>
-                <td>Juan Pérez<br><small>+51 912 345 678</small></td>
-                <td>Av. Universitaria 450, SMP</td>
-                <td><strong>S/ 31.40</strong></td>
-                <td><span class="badge-tag green">DELIVERY</span></td>
-                <td><span class="status-badge pending">Pendiente</span></td>
-              </tr>
-            </tbody>
+            <tbody id="ordersTbody"></tbody>
           </table>
         </div>
       </section>
@@ -162,22 +155,23 @@
                 <th>Correo Electrónico</th>
                 <th>Teléfono</th>
                 <th>Rol</th>
-                <th>Estado</th>
+                <th>Estado / Acciones</th>
               </tr>
             </thead>
             <tbody id="usersTbody"></tbody>
           </table>
         </div>
       </section>
+      <section class="admin-section" id="view-categories"><form id="categoryForm" class="table-actions"><div class="form-group"><label for="categoryName">Nueva categoría</label><input id="categoryName" minlength="3" required></div><button class="btn btn-primary">Agregar categoría</button></form><div id="categoryList" class="table-container"></div></section>
     </main>
   </div>
 
   <!-- MODAL: PRODUCTOS -->
-  <div class="modal-overlay" id="productModal">
+  <dialog class="admin-dialog" id="productModal" aria-labelledby="modalTitle">
     <div class="modal-card">
       <div class="modal-header">
         <h3 id="modalTitle">Agregar Nuevo Producto</h3>
-        <button class="close-modal" id="closeModalBtn">&times;</button>
+        <button class="close-modal" aria-label="Cerrar formulario" id="closeModalBtn">&times;</button>
       </div>
 
       <form id="productForm">
@@ -211,12 +205,17 @@
         <div class="form-row">
           <div class="form-group">
             <label for="prodPrice">Precio (S/)</label>
-            <input type="number" step="0.10" min="0.10" id="prodPrice" required placeholder="12.90" />
+            <input type="number" step="0.01" min="0.01" id="prodPrice" required placeholder="12.90" />
           </div>
           <div class="form-group">
             <label for="prodStock">Stock actual</label>
             <input type="number" step="1" min="0" id="prodStock" required placeholder="50" />
           </div>
+        </div>
+
+        <div class="form-group">
+          <label for="prodImage">URL de la imagen del producto</label>
+          <input type="url" id="prodImage" placeholder="https://ejemplo.com/foto-producto.jpg" />
         </div>
 
         <div class="form-group-checkbox">
@@ -232,17 +231,17 @@
         </div>
       </form>
     </div>
-  </div>
+  </dialog>
 
   <!-- MODAL: USUARIOS -->
-  <div class="modal-overlay" id="userModal">
+  <dialog class="admin-dialog" id="userModal" aria-label="Gestionar usuario">
     <div class="modal-card">
       <div class="modal-header">
         <h3>Registrar Usuario / Personal</h3>
-        <button class="close-modal" id="closeUserModalBtn">&times;</button>
+        <button class="close-modal" aria-label="Cerrar formulario" id="closeUserModalBtn">&times;</button>
       </div>
 
-      <form id="userAdminForm">
+      <form id="userAdminForm"><input type="hidden" id="editUserId">
         <div class="form-row">
           <div class="form-group">
             <label for="newUserName">Nombre completo</label>
@@ -257,7 +256,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="newUserPhone">Teléfono</label>
-            <input type="tel" id="newUserPhone" maxlength="9" placeholder="987654321" />
+            <input type="tel" id="newUserPhone" pattern="9[0-9]{8}" maxlength="9" placeholder="987654321" />
           </div>
           <div class="form-group">
             <label for="newUserRole">Rol Asignado</label>
@@ -271,7 +270,7 @@
 
         <div class="form-group">
           <label for="newUserPassword">Contraseña Inicial</label>
-          <input type="password" id="newUserPassword" required placeholder="Mínimo 6 caracteres" />
+          <input type="password" id="newUserPassword" required minlength="8" placeholder="Mínimo 8 caracteres" />
         </div>
 
         <div class="modal-footer">
@@ -280,8 +279,9 @@
         </div>
       </form>
     </div>
-  </div>
+  </dialog>
 
+  <script src="assets/js/shared.js"></script>
   <script src="assets/js/admin.js"></script>
 </body>
 </html>

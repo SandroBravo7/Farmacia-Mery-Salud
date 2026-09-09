@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="assets/css/ui.css" />
 </head>
 <body class="catalog-page">
 
@@ -25,12 +26,12 @@
 
       <div class="search-bar">
         <i data-lucide="search" class="search-icon"></i>
-        <input type="text" id="catalogSearchInput" placeholder="Buscar medicamentos, principios activos o síntomas..." />
+        <input type="text" id="catalogSearchInput" placeholder="Buscar por nombre o principio activo…" />
       </div>
 
       <div class="nav-actions">
         <a href="index.html" class="btn btn-secondary btn-sm"><i data-lucide="arrow-left"></i> Inicio</a>
-        <a href="#" class="nav-cart" id="cartBtn" title="Ver Carrito">
+        <a href="#" class="nav-cart" id="cartBtn" aria-label="Ver carrito" title="Ver Carrito">
           <i data-lucide="shopping-cart"></i>
           <span class="cart-badge" id="cartCount">0</span>
         </a>
@@ -42,7 +43,7 @@
   <main class="catalog-main container">
     
     <!-- Sidebar de Filtros (Estilo E-Commerce) -->
-    <aside class="catalog-sidebar">
+    <aside class="catalog-sidebar"><details id="catalogFilters" open><summary>Filtrar productos</summary><div class="filters-body">
       <div class="sidebar-header">
         <h3><i data-lucide="sliders-horizontal"></i> Filtros</h3>
         <button id="btnResetFilters" class="btn-link">Limpiar</button>
@@ -82,21 +83,21 @@
       <div class="filter-group">
         <h4>Precio Máximo</h4>
         <div class="price-slider-box">
-          <input type="range" id="priceRange" min="5" max="100" step="1" value="100" />
+          <input type="range" aria-label="Precio máximo en soles" id="priceRange" min="5" max="100" step="1" value="100" />
           <div class="price-range-labels">
             <span>S/ 5.00</span>
             <strong id="priceRangeValue">Hasta S/ 100.00</strong>
           </div>
         </div>
       </div>
-    </aside>
+    </div></details></aside>
 
     <!-- Área de Resultados y Cuadrícula -->
     <section class="catalog-content">
       <div class="catalog-top-bar">
         <div>
           <h1 class="catalog-title">Todos los Productos</h1>
-          <p class="catalog-counter" id="catalogCount">Mostrando productos disponibles</p>
+          <p class="catalog-counter" aria-live="polite" id="catalogCount">Mostrando productos disponibles</p>
         </div>
 
         <div class="catalog-sort">
@@ -117,74 +118,39 @@
     </section>
   </main>
 
-  <!-- Modal Flotante de Carrito / Checkout -->
-  <div class="cart-modal-overlay" id="cartModal">
-    <div class="cart-modal-container">
-      <div class="cart-modal-header">
-        <div class="header-title-box">
-          <i data-lucide="shopping-bag"></i>
-          <h3>Tu Carrito de Compras</h3>
-        </div>
-        <button class="btn-close-cart" id="closeCartBtn">&times;</button>
-      </div>
-
-      <div class="cart-modal-body">
-        <div id="cartViewItems">
-          <div class="cart-items-list" id="cartItemsList"></div>
-          <div class="cart-summary-box">
-            <div class="summary-row">
-              <span>Subtotal:</span>
-              <strong id="cartSubtotal">S/ 0.00</strong>
-            </div>
-            <div class="summary-row">
-              <span>Costo de Envío:</span>
-              <strong id="cartShipping">S/ 5.00</strong>
-            </div>
-            <div class="summary-row total">
-              <span>Total a Pagar:</span>
-              <strong id="cartTotal">S/ 0.00</strong>
-            </div>
-          </div>
-          <button class="btn btn-blue w-100" id="btnGoToCheckout" disabled>
-            Continuar al Checkout <i data-lucide="arrow-right"></i>
-          </button>
-        </div>
-
-        <!-- Formulario Checkout -->
-        <form id="checkoutForm" style="display: none;" novalidate>
-          <h4 class="checkout-subtitle">Datos de Entrega</h4>
-          <div class="form-group-checkout">
-            <label for="orderName">Nombre Completo</label>
-            <input type="text" id="orderName" required />
-          </div>
-          <div class="form-group-checkout">
-            <label for="orderPhone">Teléfono (9 dígitos)</label>
-            <input type="tel" id="orderPhone" maxlength="9" required />
-          </div>
-          <div class="form-group-checkout">
-            <label for="orderEmail">Correo Electrónico</label>
-            <input type="email" id="orderEmail" required />
-          </div>
-          <div class="form-group-checkout">
-            <label for="orderAddress">Dirección</label>
-            <input type="text" id="orderAddress" required />
-          </div>
-          <div class="checkout-actions">
-            <button type="button" class="btn btn-secondary" id="btnBackToCart">← Volver</button>
-            <button type="submit" class="btn btn-green">Pagar y Confirmar</button>
-          </div>
-        </form>
-
-        <div id="orderSuccessView" style="display: none; text-align: center;">
-          <div class="success-icon-box"><i data-lucide="check-circle-2"></i></div>
-          <h3>¡Pedido Confirmado!</h3>
-          <p>Código: <strong id="successOrderCode">ORD-2026-XXXX</strong></p>
-          <button class="btn btn-secondary w-100 mt-3" id="btnFinishOrder">Cerrar</button>
-        </div>
-      </div>
+<dialog id="cartModal" class="cart-dialog" aria-labelledby="cartTitle">
+  <div class="cart-modal-header"><h2 id="cartTitle">Tu carrito</h2><button type="button" class="btn-close-cart" id="closeCartBtn" aria-label="Cerrar carrito">×</button></div>
+  <div class="cart-modal-body">
+    <div id="cartViewItems"><div id="cartItemsList"></div><div class="cart-summary-box">
+      <div class="summary-row"><span>Subtotal</span><strong id="cartSubtotal"></strong></div>
+      <div class="summary-row"><span>Envío a domicilio</span><strong id="cartShipping"></strong></div>
+      <div class="summary-row total"><span>Total</span><strong id="cartTotal"></strong></div></div>
+      <button class="btn btn-blue w-100" id="btnGoToCheckout" disabled>Continuar con mi pedido →</button>
+      <p class="text-hint">Puedes elegir recojo gratuito en el siguiente paso.</p>
     </div>
+    <form id="checkoutForm" hidden>
+      <fieldset><legend>1. ¿Cómo deseas recibirlo?</legend><div class="delivery-type-selector">
+        <label class="delivery-option"><input type="radio" name="deliveryMethod" value="DELIVERY" checked> A domicilio · S/ 5.00</label>
+        <label class="delivery-option"><input type="radio" name="deliveryMethod" value="RECOJO"> Recojo en tienda · Gratis</label>
+      </div></fieldset>
+      <fieldset><legend>2. Datos de contacto y entrega</legend>
+        <div class="form-group-checkout"><label for="orderName">Nombre completo</label><input id="orderName" autocomplete="name" minlength="3" required></div>
+        <div class="form-row-checkout">
+          <div class="form-group-checkout"><label for="orderPhone">Celular</label><input id="orderPhone" type="tel" autocomplete="tel-national" inputmode="numeric" pattern="9[0-9]{8}" maxlength="9" placeholder="987654321" title="9 dígitos, empezando con 9" required></div>
+          <div class="form-group-checkout"><label for="orderEmail">Correo electrónico</label><input id="orderEmail" type="email" autocomplete="email" required></div>
+        </div>
+        <div id="deliveryFieldsGroup"><div class="form-group-checkout"><label for="orderAddress">Dirección completa</label><input id="orderAddress" autocomplete="street-address" minlength="6" placeholder="Calle, número, distrito" required></div>
+        <div class="form-group-checkout"><label for="orderReference">Referencia (opcional)</label><input id="orderReference" placeholder="Piso, puerta o lugar cercano"></div></div>
+      </fieldset>
+      <fieldset><legend>3. Receta médica</legend><div class="form-group-checkout"><label for="orderPrescriptionFile">Adjuntar receta</label><input type="file" id="orderPrescriptionFile" accept="image/jpeg,image/png,application/pdf" aria-describedby="prescriptionHint prescriptionPreview"><small id="prescriptionHint"></small><p id="prescriptionPreview" role="status"></p></div></fieldset>
+      <div class="checkout-review"><strong>Total del pedido <span id="checkoutTotal"></span></strong><p>Pago al recibir. No se solicitan datos de tarjeta. Los productos con receta requieren revisión antes del despacho.</p></div>
+      <p id="checkoutError" class="form-error" role="alert"></p>
+      <div class="checkout-actions"><button type="button" class="btn btn-secondary" id="btnBackToCart">← Volver al carrito</button><button type="submit" class="btn btn-green" id="btnConfirmOrder">Confirmar pedido</button></div>
+    </form>
+    <div id="orderSuccessView" hidden class="empty-state"><div class="success-icon-box">✓</div><h3>Pedido de demostración registrado</h3><p>Código: <strong id="successOrderCode"></strong></p><p>No se ha realizado ninguna compra ni cobro. Puedes seguir este pedido desde el historial y gestionarlo con los perfiles de prueba.</p><a href="pedidos.html" class="btn btn-blue w-100">Ver mis pedidos</a><a id="btnWhatsAppNotify" class="btn btn-secondary w-100" target="_blank" rel="noopener noreferrer">Compartir resumen por WhatsApp</a><button class="btn btn-secondary w-100" id="btnFinishOrder">Seguir explorando</button></div>
   </div>
-
-  <script src="assets/js/catalogo.js"></script>
+</dialog>
+  <script src="assets/js/shared.js"></script>
+  <script src="assets/js/main.js"></script>
 </body>
 </html>

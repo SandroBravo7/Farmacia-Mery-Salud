@@ -1,320 +1,97 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // 1. DEFINICIÓN INMEDIATA DE NAVEGACIÓN ENTRE PESTAÑAS
-  function switchTab(view) {
-    document.querySelectorAll('.nav-btn').forEach(b => {
-      if (b.getAttribute('data-view') === view) {
-        b.classList.add('active');
-      } else {
-        b.classList.remove('active');
-      }
-    });
-
-    document.querySelectorAll('.admin-section').forEach(sec => {
-      sec.classList.remove('active');
-    });
-
-    const activeSec = document.getElementById(`view-${view}`);
-    if (activeSec) {
-      activeSec.classList.add('active');
-    }
-
-    const titleEl = document.getElementById('pageTitle');
-    const subEl = document.getElementById('pageSubtitle');
-    if (titleEl) {
-      if (view === 'products') {
-        titleEl.textContent = 'Inventario de Productos';
-        if (subEl) subEl.textContent = 'Administra medicamentos, precios, recetas y disponibilidad.';
-      } else if (view === 'orders') {
-        titleEl.textContent = 'Gestión de Pedidos';
-        if (subEl) subEl.textContent = 'Monitorea y despacha las compras entrantes.';
-      } else if (view === 'users') {
-        titleEl.textContent = 'Usuarios & Personal';
-        if (subEl) subEl.textContent = 'Visualiza clientes registrados y administra cuentas de repartidores/admins.';
-        fetchUsers();
-      }
-    }
-
-    window.location.hash = view;
+document.addEventListener('DOMContentLoaded',async()=>{
+  if(!Mery.guard('ADMIN')) return;
+  const {esc,money}=Mery;
+  const states={PENDIENTE:'En revisión',ASIGNADO:'Asignado',EN_RUTA:'En ruta',ENTREGADO:'Entregado',LISTO_RECOJO:'Listo para recoger',CANCELADO:'Cancelado'};const $=id=>document.getElementById(id);
+  let products=[],users=[],orders=[];
+  const titles={products:['Inventario de productos','Administra precios, existencias y requisitos de receta.'],orders:['Gestión de pedidos','Revisa recetas, asigna repartidores y controla el despacho.'],users:['Usuarios y personal','Consulta clientes y administra los perfiles del equipo.'],categories:['Categorías','Organiza los productos para facilitar su búsqueda.']};
+  function tab() {
+    const name=location.hash.slice(1) in titles?location.hash.slice(1):'products';
+    document.querySelectorAll('.admin-section').forEach(el=>el.classList.toggle('active',el.id===`view-${name}`));
+    document.querySelectorAll('[data-view]').forEach(el=>{el.classList.toggle('active',el.dataset.view===name);el.setAttribute('aria-current',el.dataset.view===name?'page':'false');});
+    $('pageTitle').textContent=titles[name][0];$('pageSubtitle').textContent=titles[name][1];$('sidebar').classList.remove('open');$('menuToggle').setAttribute('aria-expanded','false');
   }
-
-  // 2. ACTIVAR PESTAÑA INMEDIATAMENTE (Evita parpadeos al recargar)
-  const currentHash = window.location.hash.replace('#', '');
-  if (['products', 'orders', 'users'].includes(currentHash)) {
-    switchTab(currentHash);
-  } else {
-    switchTab('products');
+  document.querySelectorAll('[data-view]').forEach(el=>el.onclick=()=>{location.hash=el.dataset.view;});window.addEventListener('hashchange',tab);tab();
+  $('menuToggle').onclick=()=>{$('sidebar').classList.toggle('open');if($('sidebar').classList.contains('open'))$('sidebar').querySelector('.nav-btn').focus();$('menuToggle').setAttribute('aria-expanded',$('sidebar').classList.contains('open'));};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('sidebar').classList.contains('open')){$('sidebar').classList.remove('open');$('menuToggle').setAttribute('aria-expanded','false');$('menuToggle').focus();}});
+  const demoOnly=()=>{if(Mery.demo)return true;Mery.notify('Esta operación se puede explorar en la demostración. La API actual aún no la admite.');return false;};
+  async function save(name,payload) {return Mery.api(name,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
+  async function load(name) {
+    const body=$(name==='productos'?'productsTbody':name==='usuarios'?'usersTbody':'ordersTbody');body.innerHTML='<tr><td colspan="7">Cargando…</td></tr>';
+    try { const data=await Mery.api(name);if(name==='productos'){products=data;renderProducts();}else if(name==='usuarios'){users=data;renderUsers();}else{orders=data;renderOrders();} }
+    catch(err){body.innerHTML=`<tr><td colspan="7"><p role="alert">${esc(err.message)}</p><button class="btn btn-secondary">Reintentar</button></td></tr>`;body.querySelector('button').onclick=()=>load(name);}
   }
-
-  // Asignar clics a los botones de navegación
-  const navBtns = document.querySelectorAll('.nav-btn');
-  navBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const view = btn.getAttribute('data-view');
-      switchTab(view);
-    });
-  });
-
-  if (window.lucide) lucide.createIcons();
-
-  let products = [];
-  let users = [];
-
-  // DOM Productos
-  const tbody = document.getElementById('productsTbody');
-  const filterInput = document.getElementById('filterInput');
-  const modal = document.getElementById('productModal');
-  const productForm = document.getElementById('productForm');
-  const openModalBtn = document.getElementById('openAddModalBtn');
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  const cancelModalBtn = document.getElementById('cancelModalBtn');
-
-  // DOM Usuarios
-  const usersTbody = document.getElementById('usersTbody');
-  const filterUsersInput = document.getElementById('filterUsersInput');
-  const userModal = document.getElementById('userModal');
-  const userAdminForm = document.getElementById('userAdminForm');
-  const openAddUserModalBtn = document.getElementById('openAddUserModalBtn');
-  const closeUserModalBtn = document.getElementById('closeUserModalBtn');
-  const cancelUserModalBtn = document.getElementById('cancelUserModalBtn');
-
-  // 3. PRODUCTOS: Fetch & Render
-  async function fetchProducts() {
+  function renderProducts() {
+    const q=$('filterInput').value.toLowerCase();const visible=products.filter(p=>p.activo!==false);const items=visible.filter(p=>`${p.nombre} ${p.principioActivo}`.toLowerCase().includes(q));
+    $('totalProducts').textContent=visible.length;$('inStockProducts').textContent=visible.filter(p=>p.stock>0).length;$('lowStockProducts').textContent=visible.filter(p=>p.stock<=5).length;
+    $('productsTbody').innerHTML=items.length?items.map(p=>`<tr><td><div class="admin-prod-cell">${p.imagenUrl?`<img src="${esc(p.imagenUrl)}" alt="${esc(p.nombre)}" class="admin-prod-thumb" onerror="this.remove()">`:`<div class="admin-prod-thumb">${p.categoriaId===1?'✚':p.categoriaId===2?'◈':'✦'}</div>`}<div><strong>${esc(p.nombre)}</strong><br><small>${esc(p.presentacion)}</small></div></div></td><td>${esc(p.principioActivo||'—')}</td><td>${esc(Mery.categories().find(c=>c.id===p.categoriaId)?.nombre||'Sin categoría')}</td><td>${money(p.precio)}</td><td><span class="badge-tag ${p.stock<=5?'amber':'green'}">${p.stock} unidades</span></td><td>${p.requiereReceta?'Requiere receta':'Sin receta'}</td><td><button class="btn-action" data-edit="${p.id}" aria-label="Editar ${esc(p.nombre)}">✎</button><button class="btn-action" data-delete="${p.id}" aria-label="Eliminar ${esc(p.nombre)}">×</button></td></tr>`).join(''):'<tr><td colspan="7">No hay productos con esta búsqueda.</td></tr>';
+    $('productsTbody').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openProduct(products.find(p=>p.id===Number(b.dataset.edit))));
+    $('productsTbody').querySelectorAll('[data-delete]').forEach(b=>b.onclick=async()=>{if(!demoOnly()||!confirm('¿Eliminar este producto del catálogo? El historial de pedidos se conserva.'))return;try{await save('productos',{...products.find(p=>p.id===Number(b.dataset.delete)),activo:false});await load('productos');}catch(err){Mery.notify(err.message);}});
+  }
+  $('filterInput').oninput=renderProducts;
+  function openProduct(p={}) {
+    $('productForm').reset();$('modalTitle').textContent=p.id?'Editar producto':'Nuevo producto';
+    $('prodCategory').innerHTML=Mery.categories().map(c=>`<option value="${c.id}">${esc(c.nombre)}</option>`).join('');
+    for(const [id,name] of Object.entries({prodId:'id',prodName:'nombre',prodActive:'principioActivo',prodPresentation:'presentacion',prodPrice:'precio',prodStock:'stock',prodCategory:'categoriaId',prodImage:'imagenUrl'})) $(id).value=p[name]??(id==='prodCategory'?1:'');
+    $('prodPrescription').checked=!!p.requiereReceta;Mery.dialog('productModal',true);
+  }
+  $('openAddModalBtn').onclick=()=>openProduct();
+  for(const id of ['closeModalBtn','cancelModalBtn'])$(id).onclick=()=>Mery.dialog('productModal',false);
+  $('productForm').onsubmit=async e=>{
+    e.preventDefault();const button=e.submitter;button.disabled=true;
     try {
-      const res = await fetch('http://localhost:8080/api/productos');
-      if (!res.ok) throw new Error('Error al obtener productos');
-      products = await res.json();
-      renderProducts(products);
-
-      const totalEl = document.getElementById('totalProducts');
-      const inStockEl = document.getElementById('inStockProducts');
-      const lowStockEl = document.getElementById('lowStockProducts');
-
-      if (totalEl) totalEl.textContent = products.length;
-      if (inStockEl) inStockEl.textContent = products.filter(p => p.stock > 5).length;
-      if (lowStockEl) lowStockEl.textContent = products.filter(p => p.stock <= 5).length;
-    } catch (err) {
-      console.error('Error al conectar con la API de productos:', err);
-    }
-  }
-
-  function renderProducts(items) {
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    items.forEach(p => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong>${p.nombre}</strong><br><small class="text-muted">${p.presentacion}</small></td>
-        <td>${p.principioActivo || '-'}</td>
-        <td>${p.categoriaId === 1 ? 'Medicamentos' : p.categoriaId === 2 ? 'Cuidado Personal' : 'Bienestar'}</td>
-        <td><strong>S/ ${parseFloat(p.precio).toFixed(2)}</strong></td>
-        <td><span class="badge-tag ${p.stock <= 5 ? 'amber' : 'green'}">${p.stock} unids</span></td>
-        <td>${p.requiereReceta ? '<span class="badge-tag green">Requiere</span>' : '<span class="badge-tag gray">Libre</span>'}</td>
-        <td>
-          <div class="action-btns">
-            <button class="btn-action edit-btn" data-id="${p.id}" title="Editar"><i data-lucide="edit-3"></i></button>
-            <button class="btn-action delete-btn" data-id="${p.id}" title="Eliminar"><i data-lucide="trash-2"></i></button>
-          </div>
-        </td>
-      `;
-      tbody.appendChild(tr);
-    });
-
-    if (window.lucide) lucide.createIcons();
-    bindProductActions();
-  }
-
-  // 4. PRODUCTOS: Filtrado y Modal
-  if (filterInput) {
-    filterInput.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      const filtered = products.filter(p => 
-        p.nombre.toLowerCase().includes(q) || 
-        (p.principioActivo && p.principioActivo.toLowerCase().includes(q))
-      );
-      renderProducts(filtered);
+      const p={...products.find(p=>p.id===Number($('prodId').value)),id:Number($('prodId').value)||null,nombre:$('prodName').value.trim(),principioActivo:$('prodActive').value.trim(),presentacion:$('prodPresentation').value.trim(),precio:Number($('prodPrice').value),stock:Number($('prodStock').value),categoriaId:Number($('prodCategory').value),imagenUrl:$('prodImage').value.trim(),requiereReceta:$('prodPrescription').checked,activo:true};
+      if(!p.nombre||!p.presentacion||p.precio<=0||!Number.isInteger(p.stock)||p.stock<0)throw new Error('Revisa nombre, presentación, precio y stock.');
+      await save('productos',p);Mery.dialog('productModal',false);await load('productos');Mery.notify('Producto guardado.');
+    }catch(err){Mery.notify(err.message);}finally{button.disabled=false;}
+  };
+  function renderUsers() {
+    const q=$('filterUsersInput').value.toLowerCase();const items=users.filter(u=>`${u.nombre} ${u.email}`.toLowerCase().includes(q));
+    $('usersTbody').innerHTML=items.length?items.map(u=>`<tr><td>${u.id}</td><td>${esc(u.nombre)}</td><td>${esc(u.email)}</td><td>${esc(u.telefono||'—')}</td><td>${u.rolId===1?'Administrador':u.rolId===2?'Repartidor':'Cliente'}</td><td>${u.activo?'Activo':'Inactivo'}<br><button class="btn btn-secondary" data-user="${u.id}">Editar</button><button class="btn btn-secondary" data-toggle="${u.id}">${u.activo?'Desactivar':'Activar'}</button></td></tr>`).join(''):'<tr><td colspan="6">No hay usuarios con esta búsqueda.</td></tr>';
+    $('usersTbody').querySelectorAll('[data-user]').forEach(b=>b.onclick=()=>{if(demoOnly())openUser(users.find(u=>u.id===Number(b.dataset.user)));});
+    $('usersTbody').querySelectorAll('[data-toggle]').forEach(b=>b.onclick=async()=>{
+      if(!demoOnly())return;const u=users.find(u=>u.id===Number(b.dataset.toggle));if(u.id===Mery.user().id)return Mery.notify('No puedes desactivar tu propia cuenta.');
+      if(!confirm(`¿${u.activo?'Desactivar':'Activar'} a ${u.nombre}?`))return;
+      try{await save('usuarios',{...u,activo:!u.activo});await load('usuarios');}catch(err){Mery.notify(err.message);}
     });
   }
-
-  function openProductModal(editData = null) {
-    productForm.reset();
-    document.getElementById('prodId').value = '';
-    document.getElementById('modalTitle').textContent = editData ? 'Editar Producto' : 'Agregar Nuevo Producto';
-
-    if (editData) {
-      document.getElementById('prodId').value = editData.id;
-      document.getElementById('prodName').value = editData.nombre;
-      if (document.getElementById('prodActive')) document.getElementById('prodActive').value = editData.principioActivo || '';
-      document.getElementById('prodCategory').value = editData.categoriaId || 1;
-      document.getElementById('prodPresentation').value = editData.presentacion;
-      document.getElementById('prodPrice').value = editData.precio;
-      document.getElementById('prodStock').value = editData.stock;
-      if (document.getElementById('prodPrescription')) document.getElementById('prodPrescription').checked = editData.requiereReceta;
-    }
-    modal.classList.add('open');
+  $('filterUsersInput').oninput=renderUsers;
+  function openUser(u={}) {
+    $('userAdminForm').reset();$('editUserId').value=u.id||'';
+    for(const [id,name] of Object.entries({newUserName:'nombre',newUserEmail:'email',newUserPhone:'telefono',newUserRole:'rolId'}))$(id).value=u[name]??(id==='newUserRole'?2:'');
+    $('newUserPassword').required=!u.id&&!Mery.demo;$('newUserPassword').parentElement.hidden=Mery.demo||!!u.id;Mery.dialog('userModal',true);
   }
-
-  if (openModalBtn) openModalBtn.addEventListener('click', () => openProductModal());
-  if (closeModalBtn) closeModalBtn.addEventListener('click', () => modal.classList.remove('open'));
-  if (cancelModalBtn) cancelModalBtn.addEventListener('click', () => modal.classList.remove('open'));
-
-  if (productForm) {
-    productForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const priceVal = parseFloat(document.getElementById('prodPrice').value);
-      const stockVal = parseInt(document.getElementById('prodStock').value, 10);
-      const idVal = document.getElementById('prodId').value;
-
-      const productPayload = {
-        id: idVal ? parseInt(idVal, 10) : null,
-        nombre: document.getElementById('prodName').value.trim(),
-        principioActivo: document.getElementById('prodActive')?.value.trim() || '',
-        presentacion: document.getElementById('prodPresentation').value.trim(),
-        precio: priceVal,
-        stock: stockVal,
-        categoriaId: parseInt(document.getElementById('prodCategory').value, 10),
-        imagenUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60',
-        requiereReceta: document.getElementById('prodPrescription')?.checked || false,
-        destacado: true,
-        activo: true
-      };
-
-      try {
-        const res = await fetch('http://localhost:8080/api/productos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productPayload)
-        });
-
-        if (res.ok) {
-          alert('¡Medicamento guardado con éxito!');
-          modal.classList.remove('open');
-          fetchProducts();
-        } else {
-          alert('Error al guardar medicamento.');
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Error de conexión con el backend.');
-      }
-    });
-  }
-
-  function bindProductActions() {
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = parseInt(btn.getAttribute('data-id'), 10);
-        const item = products.find(p => p.id === id);
-        if (item) openProductModal(item);
-      });
-    });
-
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = parseInt(btn.getAttribute('data-id'), 10);
-        if (confirm('¿Deseas eliminar este producto del inventario?')) {
-          products = products.filter(p => p.id !== id);
-          renderProducts(products);
-        }
-      });
-    });
-  }
-
-  // 5. USUARIOS: Fetch & Render
-  async function fetchUsers() {
+  $('openAddUserModalBtn').onclick=()=>openUser();for(const id of ['closeUserModalBtn','cancelUserModalBtn'])$(id).onclick=()=>Mery.dialog('userModal',false);
+  $('userAdminForm').onsubmit=async e=>{
+    e.preventDefault();e.submitter.disabled=true;
     try {
-      const res = await fetch('http://localhost:8080/api/usuarios');
-      if (!res.ok) throw new Error('Error al listar usuarios');
-      users = await res.json();
-      renderUsers(users);
-    } catch (err) {
-      console.error('Error al conectar con la API de usuarios:', err);
-    }
-  }
-
-  function renderUsers(items) {
-    if (!usersTbody) return;
-    usersTbody.innerHTML = '';
-    items.forEach(u => {
-      const tr = document.createElement('tr');
-      const rolName = u.rolId === 1 ? 'ADMIN' : (u.rolId === 2 ? 'REPARTIDOR' : 'CLIENTE');
-      const rolTagClass = u.rolId === 1 ? 'amber' : (u.rolId === 2 ? 'green' : 'gray');
-
-      tr.innerHTML = `
-        <td><strong>#${u.id}</strong></td>
-        <td><strong>${u.nombre}</strong></td>
-        <td>${u.email}</td>
-        <td>${u.telefono || '-'}</td>
-        <td><span class="badge-tag ${rolTagClass}">${rolName}</span></td>
-        <td><span class="badge-tag ${u.activo ? 'green' : 'gray'}">${u.activo ? 'Activo' : 'Inactivo'}</span></td>
-      `;
-      usersTbody.appendChild(tr);
-    });
-
-    if (window.lucide) lucide.createIcons();
-  }
-
-  // 6. USUARIOS: Filtrado y Modal
-  if (filterUsersInput) {
-    filterUsersInput.addEventListener('input', (e) => {
-      const q = e.target.value.toLowerCase().trim();
-      const filtered = users.filter(u => 
-        u.nombre.toLowerCase().includes(q) || 
-        u.email.toLowerCase().includes(q)
-      );
-      renderUsers(filtered);
+      const id=Number($('editUserId').value)||null;const email=$('newUserEmail').value.trim();
+      if(users.some(u=>u.id!==id&&u.email.toLowerCase()===email.toLowerCase()))throw new Error('Este correo ya está registrado.');
+      const rolId=Number($('newUserRole').value);if(id===Mery.user().id&&rolId!==1)throw new Error('No puedes quitar el rol de tu propia cuenta.');
+      await save('usuarios',{...users.find(u=>u.id===id),id,nombre:$('newUserName').value.trim(),email,telefono:$('newUserPhone').value,rolId,password:$('newUserPassword').value,activo:users.find(u=>u.id===id)?.activo??true});Mery.dialog('userModal',false);await load('usuarios');Mery.notify('Usuario guardado.');
+    }catch(err){Mery.notify(err.message);}finally{e.submitter.disabled=false;}
+  };
+  function renderOrders() {
+    const items=orders.filter(o=>!$('orderFilter').value||o.estado===$('orderFilter').value).sort((a,b)=>b.id-a.id);
+    $('orderSummary').textContent=`${items.length} pedidos · ${money(items.filter(o=>o.estado!=='CANCELADO').reduce((s,o)=>s+Number(o.total),0))}`;
+    $('ordersTbody').innerHTML=items.length?items.map(o=>`<tr><td><strong>${esc(o.codigoOrden)}</strong><details><summary>Ver detalle</summary>${(o.items||[]).map(i=>`<p>${i.qty} × ${esc(i.name)}</p>`).join('')||'Detalle no disponible en el servicio.'}${o.recetaNombre?`<p>Receta: ${esc(o.recetaNombre)}</p><button data-recipe="${o.id}">Ver receta</button>`:''}</details></td><td>${esc(o.clienteNombre)}<br>${esc(o.clienteTelefono)}</td><td>${esc(o.direccionEntrega)}</td><td>${money(o.total)}</td><td>${esc(o.tipoEntrega)}</td><td><span class="badge-tag green">${esc(states[o.estado]||o.estado)}</span><div class="order-controls">${o.recetaEstado==='PENDIENTE'?`<button data-approve="${o.id}">Aprobar receta</button><button data-reject="${o.id}">Rechazar receta</button>`:o.recetaEstado==='APROBADA'?'Receta aprobada':''}${o.estado==='PENDIENTE'&&o.recetaEstado!=='PENDIENTE'?(o.tipoEntrega==='DELIVERY'?`<select aria-label="Repartidor para ${esc(o.codigoOrden)}" data-driver="${o.id}"><option value="">Asignar repartidor…</option>${users.filter(u=>u.rolId===2&&u.activo).map(u=>`<option value="${u.id}">${esc(u.nombre)}</option>`).join('')}</select>`:`<button data-ready="${o.id}">Listo para recojo</button>`):''}${o.estado==='LISTO_RECOJO'?`<button data-delivered="${o.id}">Confirmar recojo</button>`:''}${o.estado==='PENDIENTE'?`<button data-cancel="${o.id}">Cancelar pedido</button>`:''}</div></td></tr>`).join(''):'<tr><td colspan="6">No hay pedidos en este estado.</td></tr>';
+    for(const [attr,patch] of [['approve',{recetaEstado:'APROBADA'}],['reject',{recetaEstado:'RECHAZADA',estado:'CANCELADO'}],['ready',{estado:'LISTO_RECOJO'}],['delivered',{estado:'ENTREGADO'}],['cancel',{estado:'CANCELADO'}]]) $('ordersTbody').querySelectorAll(`[data-${attr}]`).forEach(b=>b.onclick=()=>updateOrder(Number(b.dataset[attr]),patch));
+    $('ordersTbody').querySelectorAll('[data-driver]').forEach(el=>el.onchange=()=>{if(el.value)updateOrder(Number(el.dataset.driver),{repartidorId:Number(el.value),estado:'ASIGNADO'});});
+    $('ordersTbody').querySelectorAll('[data-recipe]').forEach(b=>b.onclick=()=>{
+      const o=orders.find(o=>o.id===Number(b.dataset.recipe));if(!o.receta)return Mery.notify('Archivo no disponible.');
+      const bytes=atob(o.receta.split(',')[1]);const data=Uint8Array.from(bytes,c=>c.charCodeAt(0));const type=o.receta.startsWith('data:application/pdf')?'application/pdf':'image/png';const url=URL.createObjectURL(new Blob([data],{type}));window.open(url,'_blank','noopener');setTimeout(()=>URL.revokeObjectURL(url),60000);
     });
   }
-
-  if (openAddUserModalBtn) openAddUserModalBtn.addEventListener('click', () => {
-    userAdminForm.reset();
-    userModal.classList.add('open');
-  });
-  if (closeUserModalBtn) closeUserModalBtn.addEventListener('click', () => userModal.classList.remove('open'));
-  if (cancelUserModalBtn) cancelUserModalBtn.addEventListener('click', () => userModal.classList.remove('open'));
-
-  if (userAdminForm) {
-    userAdminForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const payload = {
-        nombre: document.getElementById('newUserName')?.value.trim(),
-        email: document.getElementById('newUserEmail')?.value.trim(),
-        telefono: document.getElementById('newUserPhone')?.value.trim(),
-        rolId: parseInt(document.getElementById('newUserRole')?.value, 10),
-        password: document.getElementById('newUserPassword')?.value
-      };
-
-      try {
-        const res = await fetch('http://localhost:8080/api/usuarios', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-
-        if (res.ok) {
-          alert('¡Usuario registrado con éxito en MySQL!');
-          userModal.classList.remove('open');
-          fetchUsers();
-        } else {
-          const errText = await res.text();
-          alert(`Error: ${errText}`);
-        }
-      } catch (err) {
-        console.error(err);
-        alert('Error al conectar con el servidor.');
-      }
-    });
+  async function updateOrder(id,patch) {
+    if(!demoOnly())return;if(!confirm('¿Confirmar este cambio en el pedido?')){renderOrders();return;}
+    try {const o=orders.find(o=>o.id===id);await save('pedidos',{...o,...patch});if(patch.estado==='CANCELADO') {const current=Mery.list('productos');Mery.write(Mery.key('productos'),current.map(p=>({...p,stock:p.stock+(o.items.find(i=>i.id===p.id)?.qty||0)})));await load('productos');}await load('pedidos');Mery.notify('Pedido actualizado.');}catch(err){Mery.notify(err.message);}
   }
-
-  // Menú Mobile
-  const menuToggle = document.getElementById('menuToggle');
-  const sidebar = document.getElementById('sidebar');
-  if (menuToggle && sidebar) {
-    menuToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+  $('orderFilter').onchange=renderOrders;
+  function renderCategories() {
+    $('categoryList').innerHTML=Mery.categories().map(c=>`<div class="category-row"><input aria-label="Nombre de categoría ${c.id}" value="${esc(c.nombre)}" data-category="${c.id}" minlength="3"><button data-save-category="${c.id}">Guardar</button><button data-delete-category="${c.id}">Eliminar</button></div>`).join('');
+    $('categoryList').querySelectorAll('[data-save-category]').forEach(b=>b.onclick=()=>{if(!demoOnly())return;const id=Number(b.dataset.saveCategory);const name=$('categoryList').querySelector(`[data-category="${id}"]`).value.trim();if(name.length<3)return Mery.notify('Usa al menos 3 caracteres.');if(Mery.categories().some(c=>c.id!==id&&c.nombre.toLowerCase()===name.toLowerCase()))return Mery.notify('Ya existe esta categoría.');Mery.write(Mery.key('categories'),Mery.categories().map(c=>c.id===id?{...c,nombre:name}:c));renderProducts();Mery.notify('Categoría actualizada.');});
+    $('categoryList').querySelectorAll('[data-delete-category]').forEach(b=>b.onclick=()=>{if(!demoOnly())return;const id=Number(b.dataset.deleteCategory);if(products.some(p=>p.categoriaId===id))return Mery.notify('Esta categoría tiene productos. Reasígnalos antes de eliminarla.');if(confirm('¿Eliminar categoría?')){Mery.write(Mery.key('categories'),Mery.categories().filter(c=>c.id!==id));renderCategories();}});
   }
-
-  // Cargas de datos iniciales
-  fetchProducts();
-  fetchUsers();
+  $('categoryForm').onsubmit=e=>{e.preventDefault();if(!demoOnly())return;const name=$('categoryName').value.trim();const categories=Mery.categories();if(name.length<3||categories.some(c=>c.nombre.toLowerCase()===name.toLowerCase()))return Mery.notify('Escribe un nombre único de al menos 3 caracteres.');Mery.write(Mery.key('categories'),[...categories,{id:Math.max(0,...categories.map(c=>c.id))+1,nombre:name}]);e.target.reset();renderCategories();};
+  renderCategories();await Promise.all([load('productos'),load('usuarios')]);await load('pedidos');
+  window.addEventListener('storage',e=>{if(e.key===Mery.key('pedidos'))load('pedidos');});
 });
