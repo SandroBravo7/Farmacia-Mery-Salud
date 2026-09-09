@@ -75,11 +75,37 @@ CREATE TABLE IF NOT EXISTS productos (
 );
 
 INSERT INTO productos (id, categoria_id, nombre, principio_activo, presentacion, precio, stock, imagen_url, requiere_receta, destacado, activo) VALUES
-(1, 1, 'Paracetamol 500mg', 'Paracetamol', 'Caja x 20 tabletas', 12.90, 45, 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60', FALSE, TRUE, TRUE),
-(2, 1, 'Amoxicilina 500mg', 'Amoxicilina', 'Caja x 12 cápsulas', 24.50, 18, 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=500&auto=format&fit=crop&q=60', TRUE, TRUE, TRUE),
-(3, 3, 'Vitamina C + Zinc', 'Ácido Ascórbico + Zinc', 'Tubo x 10 efervescentes', 18.00, 30, 'https://images.unsplash.com/photo-1577401239170-897942555fb3?w=500&auto=format&fit=crop&q=60', FALSE, TRUE, TRUE),
-(4, 2, 'Alcohol en Gel 70% 500ml', 'Alcohol Etílico 70%', 'Frasco dosificador 500ml', 9.90, 60, 'https://images.unsplash.com/photo-1584744982491-665216d95f8b?w=500&auto=format&fit=crop&q=60', FALSE, FALSE, TRUE)
-ON DUPLICATE KEY UPDATE nombre = VALUES(nombre);
+(1, 1, 'Paracetamol 500 mg', 'Paracetamol', 'Caja × 20 tabletas', 12.90, 24, 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=80', FALSE, TRUE, TRUE),
+(2, 1, 'Ibuprofeno 400 mg', 'Ibuprofeno', 'Caja × 30 tabletas', 18.50, 15, 'https://images.unsplash.com/photo-1585435557343-3b092031a831?w=500&auto=format&fit=crop&q=80', TRUE, TRUE, TRUE),
+(3, 3, 'Vitamina C 1000 mg', 'Ácido ascórbico', 'Tubo × 20 tabletas', 24.90, 18, 'https://images.unsplash.com/photo-1577401239170-897942555fb3?w=500&auto=format&fit=crop&q=80', FALSE, TRUE, TRUE),
+(4, 1, 'Omeprazol 20 mg', 'Omeprazol', 'Caja × 30 cápsulas', 15.90, 4, 'https://images.unsplash.com/photo-1471864190281-a93a3070b6de?w=500&auto=format&fit=crop&q=80', TRUE, TRUE, TRUE),
+(5, 2, 'Alcohol medicinal 70°', 'Alcohol etílico', 'Frasco × 250 ml', 8.50, 30, 'https://images.unsplash.com/photo-1584744982491-665216d95f8b?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(6, 2, 'Gasas estériles', 'Material de curación', 'Paquete × 10 unidades', 6.00, 12, 'https://images.unsplash.com/photo-1603398938378-e54eab446dde?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(7, 2, 'Protector solar SPF 50', 'Cuidado de la piel', 'Tubo × 50 ml', 49.90, 0, 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(8, 3, 'Multivitamínico', 'Vitaminas y minerales', 'Frasco × 30 tabletas', 35.00, 10, 'https://images.unsplash.com/photo-1584017911766-d451b3d0e843?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1001, 2, 'Termómetro digital', 'Accesorio de medición', 'Unidad con estuche', 19.90, 16, 'https://images.unsplash.com/photo-1588776814546-1ffcf47267a5?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1002, 2, 'Mascarillas descartables', 'Protección personal', 'Caja × 50 unidades', 15.00, 40, 'https://images.unsplash.com/photo-1586942593568-29361efcd571?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1003, 2, 'Vendas elásticas', 'Material de curación', 'Venda de 10 cm × 5 m', 9.50, 25, 'https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1004, 2, 'Algodón hidrófilo', 'Material de curación', 'Bolsa × 100 g', 7.90, 32, 'https://images.unsplash.com/photo-1584362917165-526a968579e8?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1005, 2, 'Apósitos adhesivos', 'Material de curación', 'Caja × 20 unidades', 6.90, 35, 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1006, 2, 'Gel antibacterial', 'Higiene de manos', 'Frasco × 250 ml', 10.90, 28, 'https://images.unsplash.com/photo-1584483766114-2cea6facdf57?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1007, 2, 'Jabón líquido neutro', 'Higiene personal', 'Frasco × 400 ml', 14.90, 22, 'https://images.unsplash.com/photo-1585751119414-ef2636f8aede?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1008, 2, 'Cepillo dental suave', 'Higiene bucal', 'Unidad', 8.90, 30, 'https://images.unsplash.com/photo-1607613009820-a29f7bb81c04?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1009, 2, 'Pasta dental', 'Higiene bucal', 'Tubo × 90 g', 11.90, 24, 'https://images.unsplash.com/photo-1570554886111-e80fcca6a029?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1010, 2, 'Pañales para adulto talla M', 'Cuidado del adulto', 'Paquete × 10 unidades', 32.90, 14, 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1011, 3, 'Bebida nutricional de vainilla', 'Complemento nutricional', 'Botella × 237 ml', 12.50, 20, 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
+(1012, 3, 'Barra de avena y frutos secos', 'Alimento envasado', 'Caja × 6 barras', 18.90, 18, 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE)
+ON DUPLICATE KEY UPDATE 
+    categoria_id = VALUES(categoria_id),
+    nombre = VALUES(nombre),
+    principio_activo = VALUES(principio_activo),
+    presentacion = VALUES(presentacion),
+    precio = VALUES(precio),
+    stock = VALUES(stock),
+    imagen_url = VALUES(imagen_url),
+    requiere_receta = VALUES(requiere_receta),
+    destacado = VALUES(destacado),
+    activo = VALUES(activo);
 
 -- 5. Tabla de Pedidos
 CREATE TABLE IF NOT EXISTS pedidos (

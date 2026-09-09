@@ -1,446 +1,162 @@
-document.addEventListener('DOMContentLoaded', () => {
-  if (window.lucide) {
-    lucide.createIcons();
+document.addEventListener('DOMContentLoaded', async () => {
+  const {esc,money,key,read,write} = Mery;
+  const $ = id => document.getElementById(id);
+  let products=[];
+  let cart=read(key('cart'),[]).filter(i=>Number.isInteger(i.qty)&&i.qty>0&&Number.isFinite(i.price)&&i.price>0);
+  let delivery='DELIVERY';
+  const catalog=Boolean($('catalogProductsGrid'));
+  const grid=catalog?$('catalogProductsGrid'):document.querySelector('.products-grid');
+  const search=$(catalog?'catalogSearchInput':'searchInput');
+  const params=new URLSearchParams(location.search);
+  if (catalog) {
+    const desktop=matchMedia('(min-width: 769px)');
+    const adaptFilters=()=>{$('catalogFilters').open=desktop.matches;};adaptFilters();desktop.addEventListener('change',adaptFilters);
+    const group=document.querySelector('[name="filterCat"]').closest('.filter-group');
+    group.innerHTML='<h4>Categorías</h4><label class="filter-checkbox"><input type="radio" name="filterCat" value="ALL" checked> Todas las categorías</label>'+Mery.categories().map(c=>`<label class="filter-checkbox"><input type="radio" name="filterCat" value="${c.id}"> ${esc(c.nombre)}</label>`).join('');
+    search.value=params.get('q')||'';
+    const radio=[...document.querySelectorAll('[name="filterCat"]')].find(el=>el.value===params.get('cat'));
+    if(radio) radio.checked=true;
   }
-
-  // 1. Carrito Persistente con LocalStorage (RF04)
-  let cart = JSON.parse(localStorage.getItem('merysalud_cart')) || [];
-  let currentShippingCost = 5.00;
-  let deliveryMethod = 'DELIVERY'; // 'DELIVERY' o 'RECOJO'
-  let allProducts = [];
-
-  const productsGrid = document.querySelector('.products-grid');
-  const cartBtn = document.getElementById('cartBtn');
-  const cartModal = document.getElementById('cartModal');
-  const closeCartBtn = document.getElementById('closeCartBtn');
-  const cartBadge = document.getElementById('cartCount');
-  const cartItemsList = document.getElementById('cartItemsList');
-  const cartSubtotal = document.getElementById('cartSubtotal');
-  const cartShipping = document.getElementById('cartShipping');
-  const cartTotal = document.getElementById('cartTotal');
-  const btnGoToCheckout = document.getElementById('btnGoToCheckout');
-
-  const cartViewItems = document.getElementById('cartViewItems');
-  const checkoutForm = document.getElementById('checkoutForm');
-  const btnBackToCart = document.getElementById('btnBackToCart');
-  const orderSuccessView = document.getElementById('orderSuccessView');
-  const btnFinishOrder = document.getElementById('btnFinishOrder');
-
-  // Inputs del Formulario
-  const inputName = document.getElementById('orderName');
-  const inputPhone = document.getElementById('orderPhone');
-  const inputEmail = document.getElementById('orderEmail');
-  const inputAddress = document.getElementById('orderAddress');
-  const inputCardNumber = document.getElementById('cardNumber');
-  const inputCardExp = document.getElementById('cardExp');
-  const inputCardCvv = document.getElementById('cardCvv');
-  const deliveryFieldsGroup = document.getElementById('deliveryFieldsGroup');
-  const optDelivery = document.getElementById('optDelivery');
-  const optPickup = document.getElementById('optPickup');
-
-  // 2. Cargar Productos desde Spring Boot (API REST)
-  async function loadProductsFromBackend() {
-    try {
-      const res = await fetch('http://localhost:8080/api/productos');
-      if (!res.ok) throw new Error('Error al conectar con la API');
-      const data = await res.json();
-      allProducts = Array.isArray(data) ? data : [];
-      renderFeaturedProducts(allProducts);
-    } catch (err) {
-      console.warn('Backend no detectado o error de conexión:', err);
-    }
-  }
-
-  // 3. Renderizar únicamente Productos Destacados en el Home (index.html)
-  function renderFeaturedProducts(items) {
-    if (!productsGrid) return;
-    productsGrid.innerHTML = '';
-
-    // Filtrar solo productos destacados
-    const featured = items.filter(p => p.destacado);
-    const displayList = featured.length > 0 ? featured : items;
-
-    displayList.forEach(prod => {
-      const card = document.createElement('div');
-      card.className = 'product-card';
-      card.innerHTML = `
-        <div class="product-img-box">
-          <img src="${prod.imagenUrl}" alt="${prod.nombre}" loading="lazy" />
-        </div>
-        <span class="stock-badge">⭐ Destacado</span>
-        <h3 class="product-name">${prod.nombre}</h3>
-        <p class="product-detail">${prod.presentacion}</p>
-        <div class="product-price">S/ ${parseFloat(prod.precio).toFixed(2)}</div>
-        <button type="button" class="btn btn-add-cart" data-name="${prod.nombre}" data-price="${prod.precio}">
-          <i data-lucide="shopping-cart"></i> Agregar al carrito
-        </button>
-      `;
-      productsGrid.appendChild(card);
-    });
-
-    if (window.lucide) lucide.createIcons();
-    bindAddToCartButtons();
-  }
-
-  // 4. Manejo de Carrito
-  function saveCart() {
-    localStorage.setItem('merysalud_cart', JSON.stringify(cart));
-    updateCartUI();
-  }
-
-  function updateCartUI() {
-    const totalCount = cart.reduce((acc, it) => acc + it.qty, 0);
-    if (cartBadge) cartBadge.textContent = totalCount;
-
-    if (cart.length === 0) {
-      if (cartItemsList) cartItemsList.innerHTML = '<p class="text-hint" style="text-align:center; padding: 20px 0;">Tu carrito está vacío.</p>';
-      if (cartSubtotal) cartSubtotal.textContent = 'S/ 0.00';
-      if (cartShipping) cartShipping.textContent = 'S/ 0.00';
-      if (cartTotal) cartTotal.textContent = 'S/ 0.00';
-      if (btnGoToCheckout) btnGoToCheckout.disabled = true;
-      return;
-    }
-
-    if (btnGoToCheckout) btnGoToCheckout.disabled = false;
-    if (cartItemsList) {
-      cartItemsList.innerHTML = '';
-      let subtotal = 0;
-
-      cart.forEach(item => {
-        const itemSubtotal = item.price * item.qty;
-        subtotal += itemSubtotal;
-
-        const div = document.createElement('div');
-        div.className = 'cart-item-row';
-        div.innerHTML = `
-          <div class="cart-item-info">
-            <strong>${item.name}</strong>
-            <span>S/ ${item.price.toFixed(2)} c/u</span>
-          </div>
-          <div class="cart-item-actions">
-            <button type="button" class="btn-qty" onclick="changeQty('${item.name}', -1)">-</button>
-            <span>${item.qty}</span>
-            <button type="button" class="btn-qty" onclick="changeQty('${item.name}', 1)">+</button>
-          </div>
-        `;
-        cartItemsList.appendChild(div);
-      });
-
-      const activeShipping = (deliveryMethod === 'DELIVERY') ? currentShippingCost : 0.00;
-      if (cartSubtotal) cartSubtotal.textContent = `S/ ${subtotal.toFixed(2)}`;
-      if (cartShipping) cartShipping.textContent = activeShipping === 0 ? 'Gratis' : `S/ ${activeShipping.toFixed(2)}`;
-      if (cartTotal) cartTotal.textContent = `S/ ${(subtotal + activeShipping).toFixed(2)}`;
-    }
-  }
-
-  window.changeQty = function(name, delta) {
-    const idx = cart.findIndex(it => it.name === name);
-    if (idx !== -1) {
-      cart[idx].qty += delta;
-      if (cart[idx].qty <= 0) {
-        cart.splice(idx, 1);
-      }
-      saveCart();
-    }
-  };
-
-  function bindAddToCartButtons() {
-    document.querySelectorAll('.btn-add-cart').forEach(button => {
-      button.onclick = () => {
-        const name = button.getAttribute('data-name');
-        const price = parseFloat(button.getAttribute('data-price'));
-
-        const existing = cart.find(it => it.name === name);
-        if (existing) {
-          existing.qty += 1;
-        } else {
-          cart.push({ name, price, qty: 1 });
+  function renderProducts() {
+    if(!grid) return;
+    const q=(catalog?search.value:'').trim().toLocaleLowerCase('es');
+    const category=document.querySelector('[name="filterCat"]:checked')?.value||'ALL';
+    let items=products.filter(p=>p.activo!==false);
+    if(catalog) {
+      items=items.filter(p=>(`${p.nombre} ${p.principioActivo}`.toLocaleLowerCase('es').includes(q))&&(category==='ALL'||String(p.categoriaId)===category)&&(!$('filterPrescription').checked||p.requiereReceta)&&Number(p.precio)<=Number($('priceRange').value));
+      const sort=$('sortBy').value;
+      items.sort((a,b)=>sort==='price-asc'?a.precio-b.precio:sort==='price-desc'?b.precio-a.precio:sort==='name-asc'?a.nombre.localeCompare(b.nombre):Number(b.destacado)-Number(a.destacado));
+      $('catalogCount').textContent=`${items.length} producto${items.length===1?'':'s'} encontrado${items.length===1?'':'s'}`;
+      const url=new URL(location); q?url.searchParams.set('q',search.value):url.searchParams.delete('q');category!=='ALL'?url.searchParams.set('cat',category):url.searchParams.delete('cat');history.replaceState(null,'',url);
+    } else {const featured=items.filter(p=>p.destacado);items=(featured.length?featured:items).slice(0,4);}
+    grid.innerHTML=items.length?items.map(p=>{
+      const cartItem=cart.find(i=>i.id===p.id);
+      const inCartQty=cartItem?cartItem.qty:0;
+      return `<article class="product-card">
+        <div class="product-img-box">${p.imagenUrl?`<img src="${esc(p.imagenUrl)}" alt="${esc(p.nombre)}" loading="lazy">`:''}<span class="product-symbol" aria-hidden="true">${p.categoriaId===1?'✚':p.categoriaId===2?'◈':'✦'}</span><span class="product-pack">${esc(p.presentacion)}</span></div>
+        <span class="stock-badge ${p.stock<=0?'stock-empty':''}">${p.stock>0?`${p.stock} disponibles`:'Agotado'}</span>
+        <h3 class="product-name">${esc(p.nombre)}</h3><p class="product-detail">${esc(p.principioActivo||'')}<br>${esc(p.presentacion)}</p>
+        <span class="prescription-label">${p.requiereReceta?'Requiere receta médica':'Sin receta'}</span><div class="product-price">${money(p.precio)}</div>
+        ${p.stock<=0
+          ? `<button class="btn btn-add-cart" disabled>No disponible</button>`
+          : inCartQty>0
+            ? `<div class="product-qty-stepper" data-product="${Number(p.id)}">
+                <button type="button" class="btn-stepper btn-stepper-minus" data-delta="-1" aria-label="Reducir una unidad de ${esc(p.nombre)}">−</button>
+                <span class="stepper-val" aria-label="${inCartQty} en el carrito">${inCartQty} en carrito</span>
+                <button type="button" class="btn-stepper btn-stepper-plus" data-delta="1" aria-label="Aumentar una unidad de ${esc(p.nombre)}" ${inCartQty>=p.stock?'disabled':''}>+</button>
+               </div>`
+            : `<button class="btn btn-add-cart" data-product="${Number(p.id)}">Agregar al carrito</button>`
         }
-
+      </article>`;
+    }).join(''):'<div class="empty-state"><h3>No encontramos productos</h3><p>Prueba otro nombre o limpia los filtros.</p></div>';
+    grid.querySelectorAll('img').forEach(img=>{img.onerror=()=>img.remove();});
+    grid.querySelectorAll('.btn-add-cart[data-product]').forEach(btn=>{
+      btn.onclick=()=>{
+        const p=products.find(p=>p.id===Number(btn.dataset.product));
+        if(!p||p.stock<=0) return;
+        const item=cart.find(i=>i.id===p.id);
+        if((item?.qty||0)>=p.stock) return Mery.notify('Ya agregaste todas las unidades disponibles.');
+        if(item) { item.qty++; item.image=item.image||p.imagenUrl||''; }
+        else cart.push({id:p.id,name:p.nombre,price:Number(p.precio),qty:1,stock:p.stock,requiresPrescription:p.requiereReceta,image:p.imagenUrl||''});
         saveCart();
-
-        const originalHtml = button.innerHTML;
-        button.innerHTML = '¡Agregado!';
-        button.style.backgroundColor = '#10B981';
-
-        setTimeout(() => {
-          button.innerHTML = originalHtml;
-          button.style.backgroundColor = '';
-          if (window.lucide) lucide.createIcons();
-        }, 800);
+        Mery.notify(`${p.nombre} agregado al carrito.`);
       };
     });
-  }
-
-  // Modal Abrir / Cerrar
-  if (cartBtn) {
-    cartBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      cartModal.classList.add('open');
-      showView('items');
-    });
-  }
-
-  if (closeCartBtn) closeCartBtn.addEventListener('click', () => cartModal.classList.remove('open'));
-  if (btnGoToCheckout) btnGoToCheckout.addEventListener('click', () => showView('checkout'));
-  if (btnBackToCart) btnBackToCart.addEventListener('click', () => showView('items'));
-
-  function showView(view) {
-    if (cartViewItems) cartViewItems.style.display = view === 'items' ? 'block' : 'none';
-    if (checkoutForm) checkoutForm.style.display = view === 'checkout' ? 'block' : 'none';
-    if (orderSuccessView) orderSuccessView.style.display = view === 'success' ? 'block' : 'none';
-    if (view === 'checkout') updateCartUI();
-  }
-
-  // 5. Alternar Método de Entrega
-  function setDeliveryMethod(method) {
-    deliveryMethod = method;
-    if (method === 'DELIVERY') {
-      if (optDelivery) optDelivery.classList.add('active');
-      if (optPickup) optPickup.classList.remove('active');
-      if (deliveryFieldsGroup) deliveryFieldsGroup.style.display = 'block';
-    } else {
-      if (optPickup) optPickup.classList.add('active');
-      if (optDelivery) optDelivery.classList.remove('active');
-      if (deliveryFieldsGroup) deliveryFieldsGroup.style.display = 'none';
-      clearError(inputAddress, 'errOrderAddress');
-    }
-    updateCartUI();
-  }
-
-  if (optDelivery && optPickup) {
-    optDelivery.addEventListener('click', () => setDeliveryMethod('DELIVERY'));
-    optPickup.addEventListener('click', () => setDeliveryMethod('RECOJO'));
-  }
-
-  // 6. Formateo y Validaciones
-  if (inputName) {
-    inputName.addEventListener('input', (e) => {
-      e.target.value = e.target.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-      clearError(inputName, 'errOrderName');
-    });
-  }
-
-  if (inputPhone) {
-    inputPhone.addEventListener('input', (e) => {
-      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 9);
-      clearError(inputPhone, 'errOrderPhone');
-    });
-  }
-
-  if (inputCardNumber) {
-    inputCardNumber.addEventListener('input', (e) => {
-      let val = e.target.value.replace(/\D/g, '').slice(0, 16);
-      let formatted = val.match(/.{1,4}/g)?.join(' ') || val;
-      e.target.value = formatted;
-      clearError(inputCardNumber, 'errCardNumber');
-    });
-  }
-
-  if (inputCardExp) {
-    inputCardExp.addEventListener('input', (e) => {
-      let val = e.target.value.replace(/\D/g, '').slice(0, 4);
-      if (val.length >= 3) val = val.slice(0, 2) + '/' + val.slice(2);
-      e.target.value = val;
-      clearError(inputCardExp, 'errCardExp');
-    });
-  }
-
-  if (inputCardCvv) {
-    inputCardCvv.addEventListener('input', (e) => {
-      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
-      clearError(inputCardCvv, 'errCardCvv');
-    });
-  }
-
-  function setError(inputEl, errorElId, message) {
-    if (inputEl) inputEl.classList.add('input-error');
-    const errEl = document.getElementById(errorElId);
-    if (errEl) errEl.textContent = message;
-  }
-
-  function clearError(inputEl, errorElId) {
-    if (inputEl) inputEl.classList.remove('input-error');
-    const errEl = document.getElementById(errorElId);
-    if (errEl) errEl.textContent = '';
-  }
-
-  // 7. Checkout Submit y Envío a Spring Boot
-  if (checkoutForm) {
-    checkoutForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      let isValid = true;
-
-      const nameVal = inputName.value.trim();
-      if (nameVal.length < 3) {
-        setError(inputName, 'errOrderName', 'Ingresa tu nombre y apellido.');
-        isValid = false;
-      }
-
-      const phoneVal = inputPhone.value.trim();
-      if (!/^9\d{8}$/.test(phoneVal)) {
-        setError(inputPhone, 'errOrderPhone', 'Debe empezar con 9 y tener 9 dígitos.');
-        isValid = false;
-      }
-
-      const emailVal = inputEmail.value.trim();
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
-        setError(inputEmail, 'errOrderEmail', 'Correo electrónico inválido.');
-        isValid = false;
-      }
-
-      let addressVal = 'Recojo en Farmacia Principal';
-      if (deliveryMethod === 'DELIVERY') {
-        const dirVal = inputAddress.value.trim();
-        if (dirVal.length < 6) {
-          setError(inputAddress, 'errOrderAddress', 'Ingresa dirección completa.');
-          isValid = false;
-        } else {
-          addressVal = dirVal;
-        }
-      }
-
-      const rawCard = inputCardNumber.value.replace(/\s/g, '');
-      if (rawCard.length !== 16) {
-        setError(inputCardNumber, 'errCardNumber', 'Requiere 16 dígitos.');
-        isValid = false;
-      }
-
-      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(inputCardExp.value.trim())) {
-        setError(inputCardExp, 'errCardExp', 'Formato MM/AA inválido.');
-        isValid = false;
-      }
-
-      if (inputCardCvv.value.trim().length !== 3) {
-        setError(inputCardCvv, 'errCardCvv', 'Requiere 3 dígitos.');
-        isValid = false;
-      }
-
-      if (!isValid) return;
-
-      const orderId = `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-      const rawTotalNum = parseFloat(cartTotal.textContent.replace('S/', '').trim());
-      const totalAmount = cartTotal.textContent;
-      const itemsText = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
-
-      try {
-        await fetch('http://localhost:8080/api/pedidos', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            codigoOrden: orderId,
-            clienteNombre: nameVal,
-            clienteTelefono: phoneVal,
-            clienteEmail: emailVal,
-            direccionEntrega: addressVal,
-            tipoEntrega: deliveryMethod,
-            total: rawTotalNum
-          })
-        });
-      } catch (error) {
-        console.warn('No se pudo guardar la orden en la BD:', error);
-      }
-
-      const waText = encodeURIComponent(
-        `Hola Farmacia Mery Salud, mi orden es ${orderId}.\nTipo: ${deliveryMethod}\nCliente: ${nameVal}\nTel: ${phoneVal}\nDestino: ${addressVal}\nProductos: ${itemsText}\nTotal: ${totalAmount}`
-      );
-      
-      const waBtn = document.getElementById('btnWhatsAppNotify');
-      if (waBtn) waBtn.href = `https://wa.me/51987654321?text=${waText}`;
-
-      const codeEl = document.getElementById('successOrderCode');
-      if (codeEl) codeEl.textContent = orderId;
-
-      cart = [];
-      saveCart();
-      checkoutForm.reset();
-      setDeliveryMethod('DELIVERY');
-      showView('success');
-      if (window.lucide) lucide.createIcons();
-    });
-  }
-
-  if (btnFinishOrder) {
-    btnFinishOrder.addEventListener('click', () => {
-      cartModal.classList.remove('open');
-      showView('items');
-    });
-  }
-
-  // 8. Búsqueda desde el Navbar (redirige a catalogo.html)
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && searchInput.value.trim() !== '') {
-        window.location.href = `catalogo.html?q=${encodeURIComponent(searchInput.value.trim())}`;
-      }
-    });
-  }
-
-  // 9. Manejo de Sesión de Usuario en Navbar
-  function renderUserSessionNavbar() {
-    const navActions = document.querySelector('.nav-actions');
-    const userSession = JSON.parse(localStorage.getItem('merysalud_user'));
-
-    if (!navActions || !userSession || !userSession.nombre) return;
-
-    const existingUserLink = navActions.querySelector('.nav-user') || navActions.querySelector('.user-menu-wrapper');
-    const initial = userSession.nombre.charAt(0).toUpperCase();
-    const firstName = userSession.nombre.split(' ')[0];
-
-    const userHtml = `
-      <div class="user-menu-wrapper">
-        <button type="button" class="user-profile-btn" id="userMenuBtn">
-          <div class="user-avatar-circle">${initial}</div>
-          <span>${firstName}</span>
-          <i data-lucide="chevron-down" style="width: 14px; height: 14px;"></i>
-        </button>
-        
-        <div class="user-dropdown-card" id="userDropdown">
-          <div class="user-info-head">
-            <strong>${userSession.nombre}</strong>
-            <span>${userSession.email}</span>
-            <span class="user-role-tag">${userSession.rol}</span>
-          </div>
-          ${userSession.rol === 'ADMIN' ? '<a href="admin.html" class="btn btn-secondary w-100 mb-2" style="font-size:0.8rem; margin-bottom:8px; display:block; text-align:center;">Panel Admin</a>' : ''}
-          <button type="button" class="btn-logout" id="btnLogoutSession">
-            <i data-lucide="log-out" style="width: 14px; height: 14px;"></i> Cerrar Sesión
-          </button>
-        </div>
-      </div>
-    `;
-
-    if (existingUserLink) {
-      existingUserLink.outerHTML = userHtml;
-    } else {
-      navActions.insertAdjacentHTML('beforeend', userHtml);
-    }
-
-    const btnMenu = document.getElementById('userMenuBtn');
-    const dropdown = document.getElementById('userDropdown');
-    const btnLogout = document.getElementById('btnLogoutSession');
-
-    if (btnMenu && dropdown) {
-      btnMenu.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdown.classList.toggle('open');
+    grid.querySelectorAll('.product-qty-stepper').forEach(stepper=>{
+      const pid=Number(stepper.dataset.product);
+      const p=products.find(p=>p.id===pid);
+      if(!p) return;
+      stepper.querySelectorAll('[data-delta]').forEach(btn=>{
+        btn.onclick=()=>{
+          const delta=Number(btn.dataset.delta);
+          const item=cart.find(i=>i.id===p.id);
+          if(!item&&delta>0){
+            cart.push({id:p.id,name:p.nombre,price:Number(p.precio),qty:1,stock:p.stock,requiresPrescription:p.requiereReceta,image:p.imagenUrl||''});
+            saveCart();
+            return;
+          }
+          if(!item) return;
+          const next=item.qty+delta;
+          if(next>p.stock) return Mery.notify('Ya alcanzaste el límite de existencias disponibles.');
+          if(next<=0){
+            cart=cart.filter(i=>i.id!==p.id);
+            saveCart();
+            Mery.notify(`${p.nombre} eliminado del carrito.`);
+          } else {
+            item.qty=next;
+            saveCart();
+          }
+        };
       });
-
-      document.addEventListener('click', () => dropdown.classList.remove('open'));
-    }
-
-    if (btnLogout) {
-      btnLogout.addEventListener('click', () => {
-        localStorage.removeItem('merysalud_user');
-        window.location.reload();
-      });
-    }
-
-    if (window.lucide) lucide.createIcons();
+    });
   }
-
-  renderUserSessionNavbar();
-
-  loadProductsFromBackend();
-  updateCartUI();
+  async function load() {
+    grid.innerHTML='<p class="empty-state" role="status">Cargando productos…</p>';
+    try { products=await Mery.api('productos');renderProducts(); }
+    catch(error) {grid.innerHTML=`<div class="empty-state" role="alert"><h3>No pudimos cargar el catálogo</h3><p>${esc(error.message)}</p><button class="btn btn-blue" id="retryProducts">Reintentar</button></div>`;$('retryProducts').onclick=load;}
+  }
+  function saveCart() {write(key('cart'),cart);renderCart();renderProducts();}
+  function renderCart() {
+    $('cartCount').textContent=cart.reduce((s,i)=>s+i.qty,0);
+    $('cartItemsList').innerHTML=cart.length?cart.map((i,index)=>`<div class="cart-item-row">${i.image?`<div class="cart-item-thumb"><img src="${esc(i.image)}" alt="${esc(i.name)}" loading="lazy"></div>`:''}<div class="cart-item-info"><strong>${esc(i.name)}</strong><span>${money(i.price)} c/u ${i.requiresPrescription?'· Con receta':''}</span></div><div class="cart-item-actions"><button type="button" class="btn-qty" data-index="${index}" data-delta="-1" aria-label="Reducir ${esc(i.name)}">−</button><span>${i.qty}</span><button type="button" class="btn-qty" data-index="${index}" data-delta="1" aria-label="Aumentar ${esc(i.name)}" ${i.qty>=i.stock?'disabled':''}>+</button><button type="button" class="remove-item" data-remove="${index}" aria-label="Eliminar ${esc(i.name)}">Eliminar</button></div></div>`).join(''):'<div class="empty-state"><h3>Tu carrito está vacío</h3><p>Agrega productos del catálogo para empezar.</p><a href="catalogo.html">Explorar productos</a></div>';
+    $('cartItemsList').querySelectorAll('img').forEach(img=>{img.onerror=()=>img.closest('.cart-item-thumb')?.remove();});
+    $('cartItemsList').querySelectorAll('[data-delta]').forEach(btn=>btn.onclick=()=>{
+      const i=cart[btn.dataset.index];const next=i.qty+Number(btn.dataset.delta);
+      if(next>i.stock) return Mery.notify('No hay más unidades disponibles.');
+      i.qty=next;cart=cart.filter(i=>i.qty>0);saveCart();
+    });
+    $('cartItemsList').querySelectorAll('[data-remove]').forEach(btn=>btn.onclick=()=>{cart.splice(Number(btn.dataset.remove),1);saveCart();});
+    const total=Mery.totals(cart,delivery);
+    $('cartSubtotal').textContent=money(total.subtotal);$('cartShipping').textContent=money(total.shipping);$('cartTotal').textContent=money(total.total);$('checkoutTotal').textContent=money(total.total);
+    $('btnGoToCheckout').disabled=!cart.length;
+    $('orderPrescriptionFile').required=cart.some(i=>i.requiresPrescription);
+    $('prescriptionHint').textContent=$('orderPrescriptionFile').required?'Este pedido requiere una receta. JPG, PNG o PDF, hasta 5 MB.':'Opcional. JPG, PNG o PDF, hasta 5 MB.';
+  }
+  function view(name) {for(const [id,v] of [['cartViewItems','cart'],['checkoutForm','checkout'],['orderSuccessView','success']]) $(id).hidden=v!==name;$('cartTitle').textContent=name==='cart'?'Tu carrito':name==='checkout'?'Completa tu pedido':'Pedido de demostración';}
+  $('cartBtn').onclick=e=>{e.preventDefault();view('cart');Mery.dialog('cartModal',true);};
+  $('closeCartBtn').onclick=()=>Mery.dialog('cartModal',false);
+  $('btnFinishOrder').onclick=()=>Mery.dialog('cartModal',false);
+  $('btnGoToCheckout').onclick=()=>{
+    view('checkout');const u=Mery.user();
+    if(u){$('orderName').value=u.nombre;$('orderEmail').value=u.email;$('orderPhone').value=u.telefono||'';$('orderAddress').value=read(key(`address_${u.id}`),'');}
+    $('orderName').focus();
+  };
+  $('btnBackToCart').onclick=()=>view('cart');
+  document.querySelectorAll('[name="deliveryMethod"]').forEach(el=>el.onchange=()=>{
+    delivery=el.value;$('deliveryFieldsGroup').hidden=delivery==='RECOJO';$('orderAddress').required=delivery==='DELIVERY';renderCart();
+  });
+  $('orderPrescriptionFile').onchange=()=>{
+    const file=$('orderPrescriptionFile').files[0];
+    const error=file?Mery.fileError(file):'';$('orderPrescriptionFile').setCustomValidity(error);
+    $('prescriptionPreview').textContent=error|| (file?`Archivo seleccionado: ${file.name} (${Math.ceil(file.size/1024)} KB)`:'');
+  };
+  $('checkoutForm').onsubmit=async e=>{
+    e.preventDefault();const file=$('orderPrescriptionFile').files[0];
+    if((cart.some(i=>i.requiresPrescription)||file)&&Mery.fileError(file)) { $('orderPrescriptionFile').setCustomValidity(Mery.fileError(file));$('orderPrescriptionFile').reportValidity();return; }
+    if(!cart.length||!e.target.reportValidity()) return;
+    const error=$('checkoutError');error.textContent='';
+    if(!Mery.demo) {error.textContent='La confirmación con detalle de productos y recetas aún no está disponible en el servicio. Tu carrito se conserva. Puedes probar el recorrido en la demostración.';return;}
+    const button=$('btnConfirmOrder');button.disabled=true;
+    try {
+      const current=await Mery.api('productos');
+      if(cart.some(i=>!current.some(p=>p.id===i.id&&p.activo!==false&&p.stock>=i.qty&&Number(p.precio)===i.price))) throw new Error('Cambió el stock o precio de un producto. Revisa el catálogo antes de continuar.');
+      const order={codigoOrden:`DEMO-${crypto.randomUUID().slice(0,8).toUpperCase()}`,clienteNombre:$('orderName').value.trim(),clienteTelefono:$('orderPhone').value,clienteEmail:$('orderEmail').value.trim(),direccionEntrega:delivery==='DELIVERY'?$('orderAddress').value.trim():'Recojo en tienda',referencia:$('orderReference').value.trim(),tipoEntrega:delivery,...Mery.totals(cart,delivery),items:cart.map(i=>({...i})),estado:'PENDIENTE',recetaEstado:file?'PENDIENTE':'NO_REQUIERE',recetaNombre:file?.name||'',createdAt:new Date().toISOString()};
+      if(file) order.receta=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('No se pudo leer el archivo.'));r.readAsDataURL(file);});
+      await Mery.api('pedidos',{method:'POST',body:JSON.stringify(order)});
+      if(!Mery.user()) write(key('guestOrders'),[...read(key('guestOrders'),[]),order.codigoOrden]);
+      write(key('productos'),current.map(p=>({...p,stock:p.stock-(cart.find(i=>i.id===p.id)?.qty||0)})));
+      if(Mery.user()) write(key(`address_${Mery.user().id}`),$('orderAddress').value.trim());
+      const message=`DEMOSTRACIÓN, no es una compra real. Pedido ${order.codigoOrden}. ${order.items.map(i=>`${i.qty} × ${i.name}`).join(', ')}. Total ${money(order.total)}.`;
+      $('btnWhatsAppNotify').href=`https://wa.me/?text=${encodeURIComponent(message)}`;
+      $('successOrderCode').textContent=order.codigoOrden;cart=[];saveCart();e.target.reset();delivery='DELIVERY';$('deliveryFieldsGroup').hidden=false;$('orderAddress').required=true;$('prescriptionPreview').textContent='';view('success');await load();
+    } catch(err) {error.textContent=err.message.includes('quota')?'No hay espacio para guardar el pedido. Prueba una receta más pequeña.':err.message;}
+    finally {button.disabled=false;}
+  };
+  if(catalog) {
+    search.oninput=renderProducts;
+    document.querySelectorAll('[name="filterCat"],#sortBy,#filterPrescription').forEach(el=>el.onchange=renderProducts);
+    $('priceRange').oninput=()=>{$('priceRangeValue').textContent=`Hasta ${money($('priceRange').value)}`;renderProducts();};
+    $('btnResetFilters').onclick=()=>{search.value='';$('filterPrescription').checked=false;$('priceRange').value=100;$('priceRangeValue').textContent='Hasta S/ 100.00';$('sortBy').value='featured';document.querySelector('[name="filterCat"][value="ALL"]').checked=true;renderProducts();};
+  } else search.onkeydown=e=>{if(e.key==='Enter')location.href=`catalogo.html?q=${encodeURIComponent(search.value.trim())}`;};
+  renderCart();await load();
 });
