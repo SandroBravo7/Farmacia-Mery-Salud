@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
   const {esc,money}=Mery;
   const states={PENDIENTE:'En revisión',ASIGNADO:'Asignado',EN_RUTA:'En ruta',ENTREGADO:'Entregado',LISTO_RECOJO:'Listo para recoger',CANCELADO:'Cancelado'};const $=id=>document.getElementById(id);
   let products=[],users=[],orders=[];
-  const titles={products:['Inventario de productos','Administra precios, existencias y requisitos de receta.'],orders:['Gestión de pedidos','Revisa recetas, asigna repartidores y controla el despacho.'],users:['Usuarios y personal','Consulta clientes y administra los perfiles del equipo.'],categories:['Categorías','Organiza los productos para facilitar su búsqueda.']};
+  const titles={products:['Inventario de productos','Administra precios, existencias y requisitos de receta.'],orders:['Gestión de pedidos','Asigna repartidores y controla el despacho de los pedidos.'],users:['Usuarios y personal','Consulta clientes y administra los perfiles del equipo.'],categories:['Categorías','Organiza los productos para facilitar su búsqueda.']};
   function tab() {
     const name=location.hash.slice(1) in titles?location.hash.slice(1):'products';
     document.querySelectorAll('.admin-section').forEach(el=>el.classList.toggle('active',el.id===`view-${name}`));
