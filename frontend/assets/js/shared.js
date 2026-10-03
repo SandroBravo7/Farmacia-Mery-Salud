@@ -63,8 +63,14 @@ const Mery = (() => {
       return items;
     }
     try {
-      const res = await fetch(`http://localhost:8080/api/${path}`, {...options, signal:AbortSignal.timeout(10000)});
-      if (!res.ok) throw new Error(res.status === 401 ? 'Correo o contraseña incorrectos.' : `No se pudo completar la operación (${res.status}).`);
+      const headers = new Headers(options.headers || {});
+      if (user()?.token) headers.set('Authorization', `Bearer ${user().token}`);
+      const res = await fetch(`http://localhost:8080/api/${path}`, {...options, headers, signal:AbortSignal.timeout(10000)});
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.message || (res.status === 401 ? 'Inicia sesión para continuar.' :
+          res.status === 403 ? 'No tienes permiso para esta operación.' : `No se pudo completar la operación (${res.status}).`));
+      }
       return await res.json();
     } catch (error) {
       if (error instanceof TypeError || error.name === 'TimeoutError') throw new Error('No hay conexión con el servicio. Reintenta; tus datos no se han descartado.');
@@ -76,7 +82,7 @@ const Mery = (() => {
     if (el) { (document.querySelector('dialog[open]') || document.body).append(el); el.textContent = message; el.hidden = false; clearTimeout(notify.timer); notify.timer=setTimeout(()=>{el.hidden=true;},7000); }
   }
   function guard(role) {
-    if (user()?.rol !== role) { location.replace(`auth.html?next=${role === 'ADMIN' ? 'admin' : 'repartidor'}`); return false; }
+    if (user()?.rol !== role || (!demo && !user()?.token)) { location.replace(`auth.html?next=${role === 'ADMIN' ? 'admin' : 'repartidor'}`); return false; }
     return true;
   }
   const totals = (cart, delivery) => {

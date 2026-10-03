@@ -13,11 +13,11 @@ document.addEventListener('DOMContentLoaded',async()=>{
   document.querySelectorAll('[data-view]').forEach(el=>el.onclick=()=>{location.hash=el.dataset.view;});window.addEventListener('hashchange',tab);tab();
   $('menuToggle').onclick=()=>{$('sidebar').classList.toggle('open');if($('sidebar').classList.contains('open'))$('sidebar').querySelector('.nav-btn').focus();$('menuToggle').setAttribute('aria-expanded',$('sidebar').classList.contains('open'));};
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('sidebar').classList.contains('open')){$('sidebar').classList.remove('open');$('menuToggle').setAttribute('aria-expanded','false');$('menuToggle').focus();}});
-  const demoOnly=()=>{if(Mery.demo)return true;Mery.notify('Esta operación se puede explorar en la demostración. La API actual aún no la admite.');return false;};
+  const demoOnly=()=>{if(Mery.demo)return true;Mery.notify('La gestión de categorías aún está disponible solo en la demostración.');return false;};
   async function save(name,payload) {return Mery.api(name,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
   async function load(name) {
     const body=$(name==='productos'?'productsTbody':name==='usuarios'?'usersTbody':'ordersTbody');body.innerHTML='<tr><td colspan="7">Cargando…</td></tr>';
-    try { const data=await Mery.api(name);if(name==='productos'){products=data;renderProducts();}else if(name==='usuarios'){users=data;renderUsers();}else{orders=data;renderOrders();} }
+    try { const data=await Mery.api(name==='productos'&&!Mery.demo?'productos/admin':name);if(name==='productos'){products=data;renderProducts();}else if(name==='usuarios'){users=data;renderUsers();}else{orders=data;renderOrders();} }
     catch(err){body.innerHTML=`<tr><td colspan="7"><p role="alert">${esc(err.message)}</p><button class="btn btn-secondary">Reintentar</button></td></tr>`;body.querySelector('button').onclick=()=>load(name);}
   }
   function renderProducts() {
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded',async()=>{
     $('totalProducts').textContent=visible.length;$('inStockProducts').textContent=visible.filter(p=>p.stock>0).length;$('lowStockProducts').textContent=visible.filter(p=>p.stock<=5).length;
     $('productsTbody').innerHTML=items.length?items.map(p=>`<tr><td><div class="admin-prod-cell">${p.imagenUrl?`<img src="${esc(p.imagenUrl)}" alt="${esc(p.nombre)}" class="admin-prod-thumb" onerror="this.remove()">`:`<div class="admin-prod-thumb">${p.categoriaId===1?'✚':p.categoriaId===2?'◈':'✦'}</div>`}<div><strong>${esc(p.nombre)}</strong><br><small>${esc(p.presentacion)}</small></div></div></td><td>${esc(p.principioActivo||'—')}</td><td>${esc(Mery.categories().find(c=>c.id===p.categoriaId)?.nombre||'Sin categoría')}</td><td>${money(p.precio)}</td><td><span class="badge-tag ${p.stock<=5?'amber':'green'}">${p.stock} unidades</span></td><td>${p.requiereReceta?'Requiere receta':'Sin receta'}</td><td><button class="btn-action" data-edit="${p.id}" aria-label="Editar ${esc(p.nombre)}">✎</button><button class="btn-action" data-delete="${p.id}" aria-label="Eliminar ${esc(p.nombre)}">×</button></td></tr>`).join(''):'<tr><td colspan="7">No hay productos con esta búsqueda.</td></tr>';
     $('productsTbody').querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>openProduct(products.find(p=>p.id===Number(b.dataset.edit))));
-    $('productsTbody').querySelectorAll('[data-delete]').forEach(b=>b.onclick=async()=>{if(!demoOnly()||!confirm('¿Eliminar este producto del catálogo? El historial de pedidos se conserva.'))return;try{await save('productos',{...products.find(p=>p.id===Number(b.dataset.delete)),activo:false});await load('productos');}catch(err){Mery.notify(err.message);}});
+    $('productsTbody').querySelectorAll('[data-delete]').forEach(b=>b.onclick=async()=>{if(!confirm('¿Eliminar este producto del catálogo? El historial de pedidos se conserva.'))return;try{await save('productos',{...products.find(p=>p.id===Number(b.dataset.delete)),activo:false});await load('productos');}catch(err){Mery.notify(err.message);}});
   }
   $('filterInput').oninput=renderProducts;
   function openProduct(p={}) {
@@ -47,9 +47,9 @@ document.addEventListener('DOMContentLoaded',async()=>{
   function renderUsers() {
     const q=$('filterUsersInput').value.toLowerCase();const items=users.filter(u=>`${u.nombre} ${u.email}`.toLowerCase().includes(q));
     $('usersTbody').innerHTML=items.length?items.map(u=>`<tr><td>${u.id}</td><td>${esc(u.nombre)}</td><td>${esc(u.email)}</td><td>${esc(u.telefono||'—')}</td><td>${u.rolId===1?'Administrador':u.rolId===2?'Repartidor':'Cliente'}</td><td>${u.activo?'Activo':'Inactivo'}<br><button class="btn btn-secondary" data-user="${u.id}">Editar</button><button class="btn btn-secondary" data-toggle="${u.id}">${u.activo?'Desactivar':'Activar'}</button></td></tr>`).join(''):'<tr><td colspan="6">No hay usuarios con esta búsqueda.</td></tr>';
-    $('usersTbody').querySelectorAll('[data-user]').forEach(b=>b.onclick=()=>{if(demoOnly())openUser(users.find(u=>u.id===Number(b.dataset.user)));});
+    $('usersTbody').querySelectorAll('[data-user]').forEach(b=>b.onclick=()=>openUser(users.find(u=>u.id===Number(b.dataset.user))));
     $('usersTbody').querySelectorAll('[data-toggle]').forEach(b=>b.onclick=async()=>{
-      if(!demoOnly())return;const u=users.find(u=>u.id===Number(b.dataset.toggle));if(u.id===Mery.user().id)return Mery.notify('No puedes desactivar tu propia cuenta.');
+      const u=users.find(u=>u.id===Number(b.dataset.toggle));if(u.id===Mery.user().id)return Mery.notify('No puedes desactivar tu propia cuenta.');
       if(!confirm(`¿${u.activo?'Desactivar':'Activar'} a ${u.nombre}?`))return;
       try{await save('usuarios',{...u,activo:!u.activo});await load('usuarios');}catch(err){Mery.notify(err.message);}
     });
@@ -82,8 +82,8 @@ document.addEventListener('DOMContentLoaded',async()=>{
     });
   }
   async function updateOrder(id,patch) {
-    if(!demoOnly())return;if(!confirm('¿Confirmar este cambio en el pedido?')){renderOrders();return;}
-    try {const o=orders.find(o=>o.id===id);await save('pedidos',{...o,...patch});if(patch.estado==='CANCELADO') {const current=Mery.list('productos');Mery.write(Mery.key('productos'),current.map(p=>({...p,stock:p.stock+(o.items.find(i=>i.id===p.id)?.qty||0)})));await load('productos');}await load('pedidos');Mery.notify('Pedido actualizado.');}catch(err){Mery.notify(err.message);}
+    if(!confirm('¿Confirmar este cambio en el pedido?')){renderOrders();return;}
+    try {const o=orders.find(o=>o.id===id);if(Mery.demo)await save('pedidos',{...o,...patch});else await Mery.api(`pedidos/${id}/estado`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(patch)});if(Mery.demo&&patch.estado==='CANCELADO') {const current=Mery.list('productos');Mery.write(Mery.key('productos'),current.map(p=>({...p,stock:p.stock+(o.items.find(i=>i.id===p.id)?.qty||0)})));}if(patch.estado==='CANCELADO')await load('productos');await load('pedidos');Mery.notify('Pedido actualizado.');}catch(err){Mery.notify(err.message);}
   }
   $('orderFilter').onchange=renderOrders;
   function renderCategories() {

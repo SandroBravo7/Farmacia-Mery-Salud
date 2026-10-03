@@ -2,78 +2,61 @@ package com.merysalud.controller;
 
 import com.merysalud.entity.Usuario;
 import com.merysalud.repository.UsuarioRepository;
+import com.merysalud.security.JwtService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
+    private final UsuarioRepository users;
+    private final PasswordEncoder encoder;
+    private final JwtService jwt;
 
-    private final UsuarioRepository usuarioRepository;
-
-    public AuthController(UsuarioRepository usuarioRepository) {
-        this.usuarioRepository = usuarioRepository;
+    public AuthController(UsuarioRepository users, PasswordEncoder encoder, JwtService jwt) {
+        this.users = users;
+        this.encoder = encoder;
+        this.jwt = jwt;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
-        String email = credenciales.get("email");
-        String password = credenciales.get("password");
-
-        if (email == null || password == null) {
-            return ResponseEntity.badRequest().body("Email y contraseña requeridos.");
+    public ResponseEntity<?> login(@RequestBody Map<String, String> data) {
+        String email = data.getOrDefault("email", "").trim();
+        String password = data.getOrDefault("password", "");
+        Usuario user = users.findByEmailIgnoreCase(email).orElse(null);
+        if (user == null || !Boolean.TRUE.equals(user.getActivo()) || !encoder.matches(password, user.getPassword())) {
+            return ResponseEntity.status(401).body(Map.of("message", "Credenciales incorrectas."));
         }
-
-        Optional<Usuario> userOpt = usuarioRepository.findByEmail(email.trim());
-
-        if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(password)) {
-            return ResponseEntity.status(401).body("Credenciales incorrectas.");
-        }
-
-        Usuario user = userOpt.get();
-        if (!user.getActivo()) {
-            return ResponseEntity.status(403).body("Usuario inactivo.");
-        }
-
-        String rolNombre = switch (user.getRolId().intValue()) {
-            case 1 -> "ADMIN";
-            case 2 -> "REPARTIDOR";
-            default -> "CLIENTE";
-        };
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("id", user.getId());
-        response.put("nombre", user.getNombre());
-        response.put("email", user.getEmail());
-        response.put("rol", rolNombre);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(session(user));
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Usuario usuario) {
-        if (usuario.getEmail() == null || usuario.getPassword() == null || usuario.getNombre() == null) {
-            return ResponseEntity.badRequest().body("Completa todos los campos obligatorios.");
+    public ResponseEntity<?> register(@RequestBody Map<String, String> data) {
+        String nombre = data.getOrDefault("nombre", "").trim();
+        String email = data.getOrDefault("email", "").trim().toLowerCase();
+        String password = data.getOrDefault("password", "");
+        if (nombre.length() < 3 || !email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$") || password.length() < 8) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Revisa nombre, correo y contraseña (mínimo 8 caracteres)."));
         }
-        if (usuarioRepository.findByEmail(usuario.getEmail().trim()).isPresent()) {
-            return ResponseEntity.badRequest().body("Este correo electrónico ya se encuentra registrado.");
+        if (users.findByEmailIgnoreCase(email).isPresent()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Este correo ya se encuentra registrado."));
         }
+        Usuario user = new Usuario();
+        user.setNombre(nombre);
+        user.setEmail(email);
+        user.setTelefono(data.getOrDefault("telefono", "").trim());
+        user.setPassword(encoder.encode(password));
+        user.setRolId(3L);
+        user.setActivo(true);
+        return ResponseEntity.ok(session(users.save(user)));
+    }
 
-        usuario.setRolId(3L); // Rol CLIENTE automático en auto-registro
-        usuario.setActivo(true);
-        Usuario guardado = usuarioRepository.save(usuario);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("id", guardado.getId());
-        response.put("nombre", guardado.getNombre());
-        response.put("email", guardado.getEmail());
-        response.put("rol", "CLIENTE");
-
-        return ResponseEntity.ok(response);
+    private Map<String, Object> session(Usuario user) {
+        return Map.of("id", user.getId(), "nombre", user.getNombre(), "email", user.getEmail(),
+                "telefono", user.getTelefono() == null ? "" : user.getTelefono(),
+                "rol", JwtService.role(user.getRolId()), "token", jwt.issue(user));
     }
 }

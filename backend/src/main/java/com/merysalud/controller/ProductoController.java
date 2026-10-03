@@ -4,12 +4,12 @@ import com.merysalud.entity.Producto;
 import com.merysalud.repository.ProductoRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/productos")
-@CrossOrigin(origins = "*")
 public class ProductoController {
 
     private final ProductoRepository productoRepository;
@@ -23,7 +23,14 @@ public class ProductoController {
         return productoRepository.findByActivoTrue();
     }
 
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<Producto> listarTodos() {
+        return productoRepository.findAll();
+    }
+
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> crearProducto(@RequestBody Producto producto) {
         if (producto.getNombre() == null || producto.getNombre().trim().isEmpty()) {
             return ResponseEntity.badRequest().body("El nombre es obligatorio");
@@ -37,7 +44,10 @@ public class ProductoController {
         if (producto.getCategoriaId() == null) {
             producto.setCategoriaId(1L);
         }
-        producto.setActivo(true);
+        if (producto.getId() != null && !productoRepository.existsById(producto.getId())) {
+            return ResponseEntity.notFound().build();
+        }
+        if (producto.getActivo() == null) producto.setActivo(true);
         Producto guardado = productoRepository.save(producto);
         return ResponseEntity.ok(guardado);
     }

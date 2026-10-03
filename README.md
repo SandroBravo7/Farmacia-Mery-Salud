@@ -1,145 +1,45 @@
-# Farmacia Mery Salud - Sistema Web E-Commerce & Gestión Farmacéutica
+# Farmacia Mery Salud
 
-Plataforma web integral para la farmacia comunitaria **Mery Salud**, diseñada para facilitar el acceso rápido a medicamentos, gestión de pedidos con delivery, carga de recetas y administración centralizada de inventario y personal.
+Aplicación local para catálogo, registro de clientes, pedidos sin receta, inventario, usuarios y reparto. El frontend usa HTML, CSS y JavaScript; el backend usa Java 21, Spring Boot 4, Spring Security y JPA. La base de datos prevista es MySQL 8. Este repositorio contiene código, esquema y documentación para reproducir el entorno en otra computadora.
 
----
+## Estado real
 
-## Estructura del Proyecto
+En modo conectado se pueden registrar clientes, iniciar sesión con BCrypt/JWT, consultar y filtrar el catálogo, crear pedidos sin receta con descuento transaccional de stock, consultar pedidos propios, administrarlos y asignar entregas a repartidores. El servidor protege las rutas por rol. Hay pruebas automatizadas del flujo de API.
 
-El repositorio está organizado bajo una arquitectura cliente-servidor desacoplada:
+El modo `?demo=1` usa datos ficticios en el navegador y sirve para explorar pantallas. **No es evidencia de persistencia real.** En modo conectado siguen pendientes la carga/revisión de recetas, el pago, el pedido como invitado, el CRUD de categorías y algunas operaciones de perfil/dirección. Los productos con receta se bloquean al confirmar un pedido real hasta implementar su validación. La interfaz conserva WhatsApp como enlace de contacto; abrirlo no equivale a un pedido ni a un pago. Datos de contacto y dirección mostrados por la plantilla deben confirmarse con la farmacia.
 
-```text
-MerySalud/
-├── backend/                  # API REST construida con Spring Boot & Maven
-│   ├── src/main/java/com/merysalud/
-│   │   ├── controller/       # AuthController, ProductoController, UsuarioController
-│   │   ├── entity/           # Producto, Usuario
-│   │   ├── repository/       # ProductoRepository, UsuarioRepository
-│   │   └── MerysaludBackendApplication.java
-│   ├── src/main/resources/
-│   │   └── application.properties
-│   ├── mvnw.cmd / mvnw
-│   └── pom.xml
-│
-├── frontend/                 # Aplicación Web (HTML5, CSS3, JavaScript nativo)
-│   ├── assets/
-│   │   ├── css/              # styles.css, admin.css, auth.css
-│   │   └── js/               # main.js, catalogo.js, admin.js, auth.js
-│   ├── index.html            # Landing page y productos destacados
-│   ├── catalogo.html         # Catálogo interactivo con filtros y búsqueda
-│   ├── auth.html             # Login y Registro con conmutación dinámica
-│   ├── admin.html            # Panel administrativo (Productos, Pedidos, Usuarios)
-│   └── repartidor.html       # Módulo para repartidores
-│
-├── README.md
-└── .gitignore
-```
+## Estructura
 
----
+- `backend/`: API REST, seguridad, entidades, repositorios, servicios y pruebas Maven.
+- `frontend/`: páginas, estilos, scripts y comprobaciones de JavaScript.
+- `database/schema.sql`: esquema y catálogo inicial para una **base nueva** de MySQL.
+- `docs/`: informe del capítulo V, matriz corregida y evidencias de pruebas.
 
-## Características Implementadas
+## Requisitos
 
-### Catálogo & E-Commerce:
-* Vista principal con productos destacados y catálogo completo independiente (`catalogo.html`).
-* Filtrado dinámico por categoría, precio máximo y medicamentos con receta.
-* Búsqueda reactiva por nombre o principio activo.
-* Carrito de compras persistente (`localStorage`) y simulación de checkout con entrega a domicilio o recojo en tienda.
+- VS Code u otro editor, JDK 21 y MySQL 8 para el entorno previsto.
+- Un servidor HTTP estático para `frontend/` (por ejemplo Live Server de VS Code o Python 3).
+- Maven se ejecuta con el wrapper `backend/mvnw` o `backend/mvnw.cmd`.
 
-### Autenticación & Control de Acceso:
-* Login centralizado con redirección condicional por roles (`ADMIN`, `REPARTIDOR`, `CLIENTE`).
-* Auto-registro de clientes directamente hacia MySQL con inicio de sesión inmediato.
-* Menú de usuario en Navbar con avatar, datos del perfil y cierre de sesión.
+## Instalación con MySQL
 
-### Panel de Administración (`admin.html`):
-* Gestión de productos: listado, creación con métricas de stock y control de recetas.
-* Gestión de usuarios y personal: listado en tiempo real y registro manual de repartidores/admins.
-* Persistencia de navegación por hash (`#products`, `#orders`, `#users`) sin parpadeos de carga.
+1. Clona la rama de trabajo: `git clone -b desarrollador/GDvega https://github.com/SandroBravo7/Farmacia-Mery-Salud.git`.
+2. En una base de desarrollo **nueva**, ejecuta `database/schema.sql` desde MySQL Workbench o `mysql -u root -p < database/schema.sql`. El script inserta el catálogo solo cuando no existe cada ID; no reinicializa su stock. Si ya tienes datos de una versión anterior, haz una copia de seguridad y revisa la migración antes de usar el esquema.
+3. Crea un usuario MySQL con permisos sobre `merysalud_db`. Configura las variables de entorno `MERY_DB_USER`, `MERY_DB_PASSWORD`, `MERY_JWT_SECRET` (mínimo 32 caracteres aleatorios) y, si cambiaste host o puerto, `MERY_DB_URL`. No pongas contraseñas en Git.
+4. Para crear cuentas locales de administrador y repartidor en la primera ejecución, configura también `MERY_SEED_DEMO=true`, `MERY_ADMIN_PASSWORD` y `MERY_DRIVER_PASSWORD` (mínimo 8 caracteres). Los correos son `admin@demo.local` y `repartidor@demo.local`. Cambia estas claves en un entorno compartido. Un cliente se registra desde `auth.html`.
+5. Desde `backend/`, ejecuta `./mvnw spring-boot:run` en Linux/macOS o `mvnw.cmd spring-boot:run` en Windows. La API escucha en `http://localhost:8080`.
+6. Sirve `frontend/` en `http://localhost:3000` o `http://localhost:5500`. Por ejemplo: `python3 -m http.server 3000 --directory frontend`. Abre `http://localhost:3000/auth.html`. Los orígenes permitidos se configuran en `MERY_FRONTEND_ORIGINS` si usas otro puerto.
 
----
+Las variables se definen con `export NOMBRE=valor` en Bash o `$env:NOMBRE='valor'` en PowerShell. Abre una terminal nueva si las configuraste desde el sistema operativo. El sistema operativo personal del equipo debe registrarse en el informe cuando se confirme.
 
-## Tecnologías Utilizadas
+### Entorno local de prueba sin MySQL
 
-* **Backend:** Java 17+, Spring Boot 3.x, Spring Data JPA, Hibernate, Maven.
-* **Base de Datos:** MySQL 8.x (`merysalud_db`).
-* **Frontend:** HTML5 semántico, CSS3 (Variables, Grid, Flexbox), Vanilla JavaScript (ES6+), Lucide Icons.
+Para comprobar la aplicación antes de configurar MySQL, se puede ejecutar el perfil `demo` con H2 en memoria: define `MERY_JWT_SECRET`, `MERY_ADMIN_PASSWORD` y `MERY_DRIVER_PASSWORD`, y desde `backend/` ejecuta `./mvnw spring-boot:run -Dspring-boot.run.profiles=demo`. Este perfil crea un catálogo pequeño y se borra al detener el proceso. Es distinto del modo `?demo=1` del navegador: el perfil H2 sí ejecuta la API y las reglas del backend, mientras que `?demo=1` usa almacenamiento del navegador.
 
----
+## Pruebas
 
-## Guía de Trabajo Colaborativo (Para el Equipo de Desarrollo)
+Desde `backend/`: `./mvnw test` (usa H2 en memoria). Desde la raíz: `node frontend/tests/check.cjs`. La matriz en `docs/` distingue pruebas automatizadas, observación local y verificación pendiente en MySQL. Para repetir mediciones de rendimiento, registra equipo, base de datos, tamaño del catálogo, número de muestras y tiempos.
 
-Para mantener la rama `main` siempre estable y funcional, **queda prohibido realizar commits directos sobre `main`**. Todo el equipo debe seguir este flujo:
+## Git
 
-### 1. Clonar el repositorio por primera vez
-```bash
-git clone <URL_DEL_REPOSITORIO>
-cd MerySalud
-```
-
-### 2. Crear una rama de trabajo individual
-Cada integrante debe crear una rama con la nomenclatura `feature/nombre-tarea` o `desarrollador/NombreApellido`:
-```bash
-git checkout main
-git pull origin main
-git checkout -b desarrollador/TuNombre
-```
-
-### 3. Flujo diario de trabajo y subida de cambios
-```bash
-# Guardar cambios locales
-git add .
-git commit -m "feat: descripcion clara del avance realizado"
-
-# Subir tu rama a GitHub
-git push origin desarrollador/TuNombre
-```
-
-### 4. Mantener tu rama actualizada con `main`
-Antes de integrar cambios, trae lo último que otros compañeros hayan subido a `main`:
-```bash
-git checkout main
-git pull origin main
-git checkout desarrollador/TuNombre
-git merge main
-```
-
----
-
-## Configuración y Ejecución Local
-
-### 1. Base de Datos (MySQL)
-
-Asegúrate de tener creado el esquema `merysalud_db` en MySQL y ajusta las credenciales en `backend/src/main/resources/application.properties`:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/merysalud_db?useSSL=false&serverTimezone=UTC
-spring.datasource.username=root
-spring.datasource.password=TU_PASSWORD
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-```
-
-### 2. Iniciar Backend
-
-Abre una terminal en la carpeta `backend`:
-
-```bash
-cd backend
-./mvnw spring-boot:run
-```
-*(En Windows CMD: `mvnw.cmd spring-boot:run`)*
-
-El servidor iniciará en: `http://localhost:8080`
-
-### 3. Iniciar Frontend
-
-Abre la carpeta `frontend/` mediante la extensión **Live Server** en VS Code o ejecutando cualquier servidor local en los puertos `5500` / `3000`.
-
----
-
-## Credenciales de Prueba
-
-| Rol | Correo Electrónico | Contraseña | Redirección Inicial |
-| :--- | :--- | :--- | :--- |
-| **Administrador** | `admin@merysalud.pe` | `admin123` | `admin.html` |
-| **Repartidor** | `repartidor@merysalud.pe` | `driver123` | `repartidor.html` |
-| **Cliente** | `cliente@gmail.com` | `cliente123` | `index.html` |
+El trabajo de este avance está en `desarrollador/GDvega`. Mantén cambios en commits descriptivos y revisa `git status` antes de subir. No se incluyen credenciales, directorios `target/` ni archivos `.env`.

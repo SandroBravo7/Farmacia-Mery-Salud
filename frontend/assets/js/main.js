@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     $('orderPrescriptionFile').required=cart.some(i=>i.requiresPrescription);
     $('prescriptionHint').textContent=$('orderPrescriptionFile').required?'Este pedido requiere una receta. JPG, PNG o PDF, hasta 5 MB.':'Opcional. JPG, PNG o PDF, hasta 5 MB.';
   }
-  function view(name) {for(const [id,v] of [['cartViewItems','cart'],['checkoutForm','checkout'],['orderSuccessView','success']]) $(id).hidden=v!==name;$('cartTitle').textContent=name==='cart'?'Tu carrito':name==='checkout'?'Completa tu pedido':'Pedido de demostración';}
+  function view(name) {for(const [id,v] of [['cartViewItems','cart'],['checkoutForm','checkout'],['orderSuccessView','success']]) $(id).hidden=v!==name;$('cartTitle').textContent=name==='cart'?'Tu carrito':name==='checkout'?'Completa tu pedido':'Pedido registrado';}
   $('cartBtn').onclick=e=>{e.preventDefault();view('cart');Mery.dialog('cartModal',true);};
   $('closeCartBtn').onclick=()=>Mery.dialog('cartModal',false);
   $('btnFinishOrder').onclick=()=>Mery.dialog('cartModal',false);
@@ -135,20 +135,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     if((cart.some(i=>i.requiresPrescription)||file)&&Mery.fileError(file)) { $('orderPrescriptionFile').setCustomValidity(Mery.fileError(file));$('orderPrescriptionFile').reportValidity();return; }
     if(!cart.length||!e.target.reportValidity()) return;
     const error=$('checkoutError');error.textContent='';
-    if(!Mery.demo) {error.textContent='La confirmación con detalle de productos y recetas aún no está disponible en el servicio. Tu carrito se conserva. Puedes probar el recorrido en la demostración.';return;}
+    if(!Mery.demo && !Mery.user()?.token) {error.textContent='Inicia sesión como cliente antes de confirmar. El carrito se conserva.';return;}
+    if(!Mery.demo && cart.some(i=>i.requiresPrescription)) {error.textContent='Los productos con receta aún no pueden confirmarse en esta versión local. Retíralos para continuar.';return;}
     const button=$('btnConfirmOrder');button.disabled=true;
     try {
       const current=await Mery.api('productos');
       if(cart.some(i=>!current.some(p=>p.id===i.id&&p.activo!==false&&p.stock>=i.qty&&Number(p.precio)===i.price))) throw new Error('Cambió el stock o precio de un producto. Revisa el catálogo antes de continuar.');
       const order={codigoOrden:`DEMO-${crypto.randomUUID().slice(0,8).toUpperCase()}`,clienteNombre:$('orderName').value.trim(),clienteTelefono:$('orderPhone').value,clienteEmail:$('orderEmail').value.trim(),direccionEntrega:delivery==='DELIVERY'?$('orderAddress').value.trim():'Recojo en tienda',referencia:$('orderReference').value.trim(),tipoEntrega:delivery,...Mery.totals(cart,delivery),items:cart.map(i=>({...i})),estado:'PENDIENTE',recetaEstado:file?'PENDIENTE':'NO_REQUIERE',recetaNombre:file?.name||'',createdAt:new Date().toISOString()};
-      if(file) order.receta=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('No se pudo leer el archivo.'));r.readAsDataURL(file);});
-      await Mery.api('pedidos',{method:'POST',body:JSON.stringify(order)});
-      if(!Mery.user()) write(key('guestOrders'),[...read(key('guestOrders'),[]),order.codigoOrden]);
-      write(key('productos'),current.map(p=>({...p,stock:p.stock-(cart.find(i=>i.id===p.id)?.qty||0)})));
+      if(Mery.demo&&file) order.receta=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('No se pudo leer el archivo.'));r.readAsDataURL(file);});
+      const saved=await Mery.api('pedidos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Mery.demo?order:{...order,items:cart.map(i=>({id:i.id,qty:i.qty}))})});
+      if(Mery.demo&&!Mery.user()) write(key('guestOrders'),[...read(key('guestOrders'),[]),order.codigoOrden]);
+      if(Mery.demo) write(key('productos'),current.map(p=>({...p,stock:p.stock-(cart.find(i=>i.id===p.id)?.qty||0)})));
       if(Mery.user()) write(key(`address_${Mery.user().id}`),$('orderAddress').value.trim());
-      const message=`DEMOSTRACIÓN, no es una compra real. Pedido ${order.codigoOrden}. ${order.items.map(i=>`${i.qty} × ${i.name}`).join(', ')}. Total ${money(order.total)}.`;
+      const message=`${Mery.demo?'DEMOSTRACIÓN, no es una compra real. ':'Pedido local de prueba. '}Pedido ${saved.codigoOrden}. ${order.items.map(i=>`${i.qty} × ${i.name}`).join(', ')}. Total ${money(saved.total)}.`;
       $('btnWhatsAppNotify').href=`https://wa.me/?text=${encodeURIComponent(message)}`;
-      $('successOrderCode').textContent=order.codigoOrden;cart=[];saveCart();e.target.reset();delivery='DELIVERY';$('deliveryFieldsGroup').hidden=false;$('orderAddress').required=true;$('prescriptionPreview').textContent='';view('success');await load();
+      $('successOrderCode').textContent=saved.codigoOrden;cart=[];saveCart();e.target.reset();delivery='DELIVERY';$('deliveryFieldsGroup').hidden=false;$('orderAddress').required=true;$('prescriptionPreview').textContent='';view('success');await load();
     } catch(err) {error.textContent=err.message.includes('quota')?'No hay espacio para guardar el pedido. Prueba una receta más pequeña.':err.message;}
     finally {button.disabled=false;}
   };

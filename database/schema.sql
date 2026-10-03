@@ -49,14 +49,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
     FOREIGN KEY (rol_id) REFERENCES roles(id)
 );
 
--- Limpiar e insertar usuarios de prueba iniciales
-DELETE FROM usuarios WHERE email IN ('admin@merysalud.pe', 'repartidor@merysalud.pe', 'cliente@gmail.com');
-
-INSERT INTO usuarios (id, nombre, email, password, telefono, rol_id, activo, created_at) VALUES
-(1, 'Administrador General', 'admin@merysalud.pe', 'admin123', '987111222', 1, 1, NOW()),
-(2, 'Carlos Repartidor', 'repartidor@merysalud.pe', 'driver123', '987333444', 2, 1, NOW()),
-(3, 'Juan Pérez', 'cliente@gmail.com', 'cliente123', '987555666', 3, 1, NOW())
-ON DUPLICATE KEY UPDATE email = VALUES(email);
+-- Los usuarios de prueba se crean solo al ejecutar el perfil local con
+-- MERY_SEED_DEMO=true y contraseñas recibidas por variables de entorno.
 
 -- 4. Tabla de Productos
 CREATE TABLE IF NOT EXISTS productos (
@@ -74,7 +68,7 @@ CREATE TABLE IF NOT EXISTS productos (
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 );
 
-INSERT INTO productos (id, categoria_id, nombre, principio_activo, presentacion, precio, stock, imagen_url, requiere_receta, destacado, activo) VALUES
+INSERT IGNORE INTO productos (id, categoria_id, nombre, principio_activo, presentacion, precio, stock, imagen_url, requiere_receta, destacado, activo) VALUES
 (1, 1, 'Paracetamol 500 mg', 'Paracetamol', 'Caja × 20 tabletas', 12.90, 24, 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=80', FALSE, TRUE, TRUE),
 (2, 1, 'Ibuprofeno 400 mg', 'Ibuprofeno', 'Caja × 30 tabletas', 18.50, 15, 'https://images.unsplash.com/photo-1585435557343-3b092031a831?w=500&auto=format&fit=crop&q=80', TRUE, TRUE, TRUE),
 (3, 3, 'Vitamina C 1000 mg', 'Ácido ascórbico', 'Tubo × 20 tabletas', 24.90, 18, 'https://images.unsplash.com/photo-1577401239170-897942555fb3?w=500&auto=format&fit=crop&q=80', FALSE, TRUE, TRUE),
@@ -95,28 +89,35 @@ INSERT INTO productos (id, categoria_id, nombre, principio_activo, presentacion,
 (1010, 2, 'Pañales para adulto talla M', 'Cuidado del adulto', 'Paquete × 10 unidades', 32.90, 14, 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
 (1011, 3, 'Bebida nutricional de vainilla', 'Complemento nutricional', 'Botella × 237 ml', 12.50, 20, 'https://images.unsplash.com/photo-1556881286-fc6915169721?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE),
 (1012, 3, 'Barra de avena y frutos secos', 'Alimento envasado', 'Caja × 6 barras', 18.90, 18, 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=500&auto=format&fit=crop&q=80', FALSE, FALSE, TRUE)
-ON DUPLICATE KEY UPDATE 
-    categoria_id = VALUES(categoria_id),
-    nombre = VALUES(nombre),
-    principio_activo = VALUES(principio_activo),
-    presentacion = VALUES(presentacion),
-    precio = VALUES(precio),
-    stock = VALUES(stock),
-    imagen_url = VALUES(imagen_url),
-    requiere_receta = VALUES(requiere_receta),
-    destacado = VALUES(destacado),
-    activo = VALUES(activo);
+;
 
 -- 5. Tabla de Pedidos
 CREATE TABLE IF NOT EXISTS pedidos (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     codigo_orden VARCHAR(50) NOT NULL UNIQUE,
+    usuario_id BIGINT NULL,
+    repartidor_id BIGINT NULL,
     cliente_nombre VARCHAR(100) NOT NULL,
     cliente_telefono VARCHAR(20) NOT NULL,
     cliente_email VARCHAR(100) NOT NULL,
     direccion_entrega VARCHAR(255),
+    referencia VARCHAR(255),
     tipo_entrega VARCHAR(50) NOT NULL,
     total DECIMAL(10, 2) NOT NULL,
     estado VARCHAR(50) DEFAULT 'PENDIENTE',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    receta_estado VARCHAR(30) DEFAULT 'NO_REQUIERE',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+    FOREIGN KEY (repartidor_id) REFERENCES usuarios(id)
+);
+
+CREATE TABLE IF NOT EXISTS detalle_pedidos (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    pedido_id BIGINT NOT NULL,
+    producto_id BIGINT NOT NULL,
+    producto_nombre VARCHAR(255) NOT NULL,
+    cantidad INT NOT NULL,
+    precio_unitario DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (pedido_id) REFERENCES pedidos(id),
+    FOREIGN KEY (producto_id) REFERENCES productos(id)
 );

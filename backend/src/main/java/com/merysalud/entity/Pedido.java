@@ -32,6 +32,17 @@ public class Pedido {
     @Column(name = "direccion_entrega")
     private String direccionEntrega;
 
+    @Column(name = "usuario_id")
+    private Long usuarioId;
+
+    @Column(name = "repartidor_id")
+    private Long repartidorId;
+
+    private String referencia;
+
+    @Column(name = "receta_estado")
+    private String recetaEstado = "NO_REQUIERE";
+
     @Column(name = "tipo_entrega", nullable = false)
     private String tipoEntrega;
 
@@ -58,6 +69,14 @@ public class Pedido {
     public void setClienteEmail(String clienteEmail) { this.clienteEmail = clienteEmail; }
     public String getDireccionEntrega() { return direccionEntrega; }
     public void setDireccionEntrega(String direccionEntrega) { this.direccionEntrega = direccionEntrega; }
+    public Long getUsuarioId() { return usuarioId; }
+    public void setUsuarioId(Long usuarioId) { this.usuarioId = usuarioId; }
+    public Long getRepartidorId() { return repartidorId; }
+    public void setRepartidorId(Long repartidorId) { this.repartidorId = repartidorId; }
+    public String getReferencia() { return referencia; }
+    public void setReferencia(String referencia) { this.referencia = referencia; }
+    public String getRecetaEstado() { return recetaEstado; }
+    public void setRecetaEstado(String recetaEstado) { this.recetaEstado = recetaEstado; }
     public String getTipoEntrega() { return tipoEntrega; }
     public void setTipoEntrega(String tipoEntrega) { this.tipoEntrega = tipoEntrega; }
     public BigDecimal getTotal() { return total; }
