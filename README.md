@@ -24,13 +24,17 @@ El modo `?demo=1` usa datos ficticios en el navegador y sirve para explorar pant
 ## Instalación con MySQL
 
 1. Clona la rama de trabajo: `git clone -b desarrollador/GDvega https://github.com/SandroBravo7/Farmacia-Mery-Salud.git`.
-2. En una base de desarrollo **nueva**, ejecuta `database/schema.sql` desde MySQL Workbench o `mysql -u root -p < database/schema.sql`. El script inserta el catálogo solo cuando no existe cada ID; no reinicializa su stock. Si ya tienes datos de una versión anterior, haz una copia de seguridad y revisa la migración antes de usar el esquema.
+2. En una base de desarrollo **nueva**, ejecuta `database/schema.sql` desde DBeaver, MySQL Workbench o la consola MySQL. En Ubuntu con autenticación local de administrador: `sudo mysql < database/schema.sql`. El script inserta el catálogo solo cuando no existe cada ID; no reinicializa su stock. Si ya tienes datos de una versión anterior, haz una copia de seguridad y revisa la migración antes de usar el esquema.
 3. Crea un usuario MySQL con permisos sobre `merysalud_db`. Configura las variables de entorno `MERY_DB_USER`, `MERY_DB_PASSWORD`, `MERY_JWT_SECRET` (mínimo 32 caracteres aleatorios) y, si cambiaste host o puerto, `MERY_DB_URL`. No pongas contraseñas en Git.
 4. Para crear cuentas locales de administrador y repartidor en la primera ejecución, configura también `MERY_SEED_DEMO=true`, `MERY_ADMIN_PASSWORD` y `MERY_DRIVER_PASSWORD` (mínimo 8 caracteres). Los correos son `admin@demo.local` y `repartidor@demo.local`. Cambia estas claves en un entorno compartido. Un cliente se registra desde `auth.html`.
 5. Desde `backend/`, ejecuta `./mvnw spring-boot:run` en Linux/macOS o `mvnw.cmd spring-boot:run` en Windows. La API escucha en `http://localhost:8080`.
 6. Sirve `frontend/` en `http://localhost:3000` o `http://localhost:5500`. Por ejemplo: `python3 -m http.server 3000 --directory frontend`. Abre `http://localhost:3000/auth.html`. Los orígenes permitidos se configuran en `MERY_FRONTEND_ORIGINS` si usas otro puerto.
 
-Las variables se definen con `export NOMBRE=valor` en Bash o `$env:NOMBRE='valor'` en PowerShell. Abre una terminal nueva si las configuraste desde el sistema operativo. El sistema operativo personal del equipo debe registrarse en el informe cuando se confirme.
+Las variables se definen con `export NOMBRE=valor` en Bash o `$env:NOMBRE='valor'` en PowerShell. Abre una terminal nueva si las configuraste desde el sistema operativo. El avance se revisó en Ubuntu 26.04.1 LTS.
+
+### Preparación rápida en Ubuntu
+
+Si MySQL ya está instalado y tienes permisos `sudo`, desde la raíz del repositorio ejecuta `sudo bash scripts/setup-local-ubuntu.sh`. El script instala OpenJDK 21, crea el esquema y un usuario MySQL limitado a `merysalud_db`, y guarda claves generadas en `.env` con permisos privados. Si Java 21 ya está instalado, añade `--skip-java` para omitir la descarga. `.env` está ignorado por Git. Para iniciar el backend en otra terminal, ejecuta `cd backend`, `set -a; source ../.env; set +a` y `./mvnw spring-boot:run`. Para consultar la base desde DBeaver usa el usuario y la contraseña guardados en `.env`, host `localhost` y puerto `3306`. El script está pensado para una base de desarrollo local nueva; no sustituye la revisión de migraciones de una base con datos previos.
 
 ### Entorno local de prueba sin MySQL
 
