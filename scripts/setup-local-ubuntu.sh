@@ -21,16 +21,17 @@ if [[ -e $env_file ]]; then
   exit 0
 fi
 
-db_user="mery_$(openssl rand -hex 4)"
+mapfile -t existing_users < <(mysql --protocol=socket -u root --batch --skip-column-names \
+  -e "SELECT user FROM mysql.user WHERE user REGEXP '^mery_[0-9a-f]{8}$' AND host = 'localhost'")
+if [[ ${#existing_users[@]} -eq 1 ]]; then
+  db_user=${existing_users[0]}
+else
+  db_user="mery_$(openssl rand -hex 4)"
+fi
 db_password=$(openssl rand -hex 24)
 jwt_secret=$(openssl rand -hex 32)
 admin_password=$(openssl rand -hex 16)
 driver_password=$(openssl rand -hex 16)
-
-mysql --protocol=socket -u root <<SQL
-CREATE USER '$db_user'@'localhost' IDENTIFIED BY '$db_password';
-GRANT ALL PRIVILEGES ON merysalud_db.* TO '$db_user'@'localhost';
-SQL
 
 temp_file=$(mktemp "$repo_dir/.env.XXXXXXXX")
 trap 'rm -f -- "$temp_file"' EXIT
@@ -43,7 +44,14 @@ MERY_ADMIN_PASSWORD=$admin_password
 MERY_DRIVER_PASSWORD=$driver_password
 MERY_SEED_DEMO=true
 ENV
-chown "$SUDO_USER" "$(id -g "$SUDO_USER")" "$temp_file"
+chown "$SUDO_USER:$(id -gn "$SUDO_USER")" "$temp_file"
+
+mysql --protocol=socket -u root <<SQL
+CREATE USER IF NOT EXISTS '$db_user'@'localhost' IDENTIFIED BY '$db_password';
+ALTER USER '$db_user'@'localhost' IDENTIFIED BY '$db_password';
+GRANT ALL PRIVILEGES ON merysalud_db.* TO '$db_user'@'localhost';
+SQL
+
 mv -- "$temp_file" "$env_file"
 trap - EXIT
 

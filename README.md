@@ -42,7 +42,9 @@ Para comprobar la aplicación antes de configurar MySQL, se puede ejecutar el pe
 
 ## Pruebas
 
-Desde `backend/`: `./mvnw test` (usa H2 en memoria). Desde la raíz: `node frontend/tests/check.cjs`. La matriz en `docs/` distingue pruebas automatizadas, observación local y verificación pendiente en MySQL. Para repetir mediciones de rendimiento, registra equipo, base de datos, tamaño del catálogo, número de muestras y tiempos.
+Desde `backend/`: `./mvnw test` (usa H2 en memoria). Desde la raíz: `node frontend/tests/check.cjs`. La matriz en `docs/` distingue las pruebas automatizadas en H2, las capturas de interfaz y las verificaciones de API y SQL con MySQL local. El resultado de la prueba real de pedido, descuento de stock y persistencia tras reiniciar se conserva en `docs/evidencias/verificacion_mysql.json`.
+
+Con el backend local en ejecución y MySQL configurado, ejecuta `python3 scripts/medir-catalogo.py` para repetir 30 solicitudes secuenciales a `GET /api/productos`. El script muestra el mínimo, la mediana, el percentil 95 y el máximo, junto con el tamaño del catálogo. El resultado de la ejecución documentada está en `docs/evidencias/medicion_catalogo_mysql.json`; la medición es local y no representa una prueba de carga concurrente.
 
 ## Git
 
