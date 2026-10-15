@@ -1,0 +1,15 @@
+{
+  "fecha": "2026-10-04T02:47:28-05:00",
+  "equipo": "Linux-7.0.0-34-generic-x86_64-with-glibc2.43",
+  "base_datos": "MySQL 8.4 local",
+  "url": "http://localhost:8080/api/productos",
+  "productos": 20,
+  "calentamiento": 3,
+  "muestras": 30,
+  "minimo_ms": 2.53,
+  "mediana_ms": 3.81,
+  "p95_ms": 6.23,
+  "maximo_ms": 6.44,
+  "criterio_ms": 3000,
+  "cumple_criterio": true
+}

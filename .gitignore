@@ -3,3 +3,7 @@ Thumbs.db
 *.log
 .vscode/
 node_modules/
+**/target/
+.env
+.env.*
+*.local.properties

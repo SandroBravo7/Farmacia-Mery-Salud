@@ -1,0 +1,15 @@
+{
+  "fecha": "2026-10-04 02:45:53 -05",
+  "motor": "MySQL 8.4.11-0ubuntu0.26.04.1",
+  "tablas": 6,
+  "productos_api": 20,
+  "producto_id": 1,
+  "stock_antes": 24,
+  "stock_despues": 23,
+  "codigo_pedido": "ORD-5F0CF7B3-FF0",
+  "estado_pedido": "PENDIENTE",
+  "detalles_guardados": 1,
+  "historial_cliente_verificado": true,
+  "persistencia_reinicio": true,
+  "verificacion": "SQL y API después de reiniciar Spring Boot"
+}

@@ -1,0 +1,12 @@
+{
+  "fecha_utc": "2026-10-03T21:15:25.901258+00:00",
+  "perfil": "demo H2 local",
+  "endpoint": "GET /api/productos",
+  "muestras": 30,
+  "productos": 4,
+  "min_ms": 2.3,
+  "mediana_ms": 3.42,
+  "p95_ms": 6.01,
+  "max_ms": 6.23,
+  "criterio_ms": 3000
+}
