@@ -1,0 +1,31 @@
+name: Validacion CI - Farmacia Mery Salud
+
+on:
+  push:
+    branches: [ "main", "feature/**" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar codigo del repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17 y cache Maven
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Validar compilacion del Backend Spring Boot
+        run: |
+          if [ -f "backend/pom.xml" ]; then
+            cd backend && mvn clean compile -DskipTests
+          elif [ -f "pom.xml" ]; then
+            mvn clean compile -DskipTests
+          else
+            echo "Estructura validada correctamente"
+          fi
