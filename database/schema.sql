@@ -1,8 +1,3 @@
--- =====================================================
--- BASE DE DATOS: MERY SALUD
--- Script de Creación de Tablas y Datos Semilla (Seed)
--- =====================================================
-
 CREATE DATABASE IF NOT EXISTS merysalud_db 
 CHARACTER SET utf8mb4 
 COLLATE utf8mb4_unicode_ci;

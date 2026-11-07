@@ -1,0 +1,84 @@
+.storefront {
+  --store-green: #0d5946;
+  --store-forest: #102e27;
+  --store-lime: #d5f48b;
+  --store-muted: #50665d;
+  --store-border: #dbe5de;
+  --primary-blue: var(--store-green);
+  --primary-hover: #094435;
+  color: #172e25;
+  background: #fbfcf8;
+}
+
+.storefront .container {
+  max-width: 1248px;
+}
+
+.storefront .navbar-top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 520px) auto;
+}
+
+.storefront .brand-icon {
+  border-radius: 12px;
+}
+
+.storefront .nav-actions {
+  gap: 12px;
+}
+
+.storefront .nav-cart,
+.storefront .nav-user {
+  background: #f1f6ef;
+}
+
+.storefront .storefront-search {
+  max-width: none;
+  padding: 3px;
+  gap: 5px;
+  border: 1px solid var(--store-border);
+  border-radius: 12px;
+  background: #f6f8f4;
+}
+
+.storefront .storefront-search input {
+  min-width: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  padding: 10px 8px 10px 35px;
+}
+
+.storefront-search .btn {
+  padding: 9px 14px;
+  border-radius: 8px;
+  background: var(--store-green);
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.storefront-search .btn:hover {
+  background: var(--primary-hover);
+}
+
+.storefront :is(a, button, select, summary, input):focus-visible {
+  outline: 3px solid #218464;
+  outline-offset: 4px;
+}
+
+@media (max-width: 760px) {
+  .storefront .navbar-top {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+
+  .storefront .storefront-search { display: flex; grid-row: 2; grid-column: 1 / -1; }
+  .storefront .nav-links { gap: 24px; }
+}
+
+@media (max-width: 540px) {
+  .storefront .container { padding-left: 16px; padding-right: 16px; }
+  .storefront .nav-links { justify-content: space-between; gap: 10px; }
+  .storefront .nav-links a { font-size: 0.81rem; }
+  .storefront .user-profile-btn > span { display: none; }
+}
