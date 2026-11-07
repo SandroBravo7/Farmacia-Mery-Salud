@@ -1,0 +1,192 @@
+.manual-page [hidden] { display: none !important; }
+
+.manual-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 14px;
+}
+
+.manual-nav nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(12px, 3vw, 28px);
+}
+
+.manual-nav nav a {
+  color: var(--store-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.manual-nav nav a[aria-current], .manual-nav nav a:hover { color: var(--store-green); }
+.manual-nav nav a[aria-current] { text-decoration: underline; text-underline-offset: 6px; }
+
+.manual-main { padding-block: 30px 64px; }
+
+.manual-hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  min-height: 238px;
+  padding: clamp(28px, 5vw, 64px);
+  border-radius: 26px;
+  background: var(--store-forest);
+  color: #fff;
+}
+
+.manual-eyebrow, .manual-kicker {
+  margin-bottom: 10px;
+  color: #c5e69b;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.manual-hero h1 {
+  margin-bottom: 14px;
+  font-size: clamp(2.45rem, 6vw, 4.5rem);
+  letter-spacing: -0.06em;
+  line-height: 1.02;
+}
+
+.manual-hero h1 span { color: var(--store-lime); }
+.manual-hero p:last-child { max-width: 51ch; color: #e0ede5; }
+
+.manual-hero-art {
+  position: absolute;
+  z-index: -1;
+  inset: 50% 7% auto auto;
+  display: grid;
+  width: 178px;
+  aspect-ratio: 1;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 1px solid #4d7564;
+  border-radius: 50%;
+  box-shadow: 0 0 0 23px #2c4f41, 0 0 0 46px #1f4034;
+  color: var(--store-lime);
+}
+
+.manual-hero-art svg { width: 78px; }
+
+.manual-roles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: fit-content;
+  margin: 24px 0 26px;
+  padding: 5px;
+  border: 1px solid var(--store-border);
+  border-radius: 14px;
+  background: #fff;
+}
+
+.manual-roles a {
+  padding: 8px 16px;
+  border-radius: 9px;
+  color: var(--store-green);
+  font-size: 0.93rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.manual-roles a:hover { background: #edf4eb; }
+.manual-roles a[aria-current] { background: var(--store-green); color: #fff; }
+
+.manual-guide { margin-bottom: 38px; scroll-margin-top: 95px; }
+.manual-heading { display: flex; align-items: end; justify-content: space-between; flex-wrap: wrap; gap: 8px 18px; }
+.manual-heading h2, .manual-faq h2 { font-size: clamp(1.55rem, 3.5vw, 2.35rem); line-height: 1.15; letter-spacing: -0.04em; }
+.manual-kicker { margin-bottom: 5px; color: var(--store-green); }
+.manual-link { color: var(--store-green); font-size: 0.92rem; font-weight: 700; text-underline-offset: 4px; }
+.manual-lead { margin: 12px 0 18px; color: var(--store-muted); }
+.manual-lead strong { color: var(--store-forest); }
+
+.manual-track {
+  margin-bottom: 18px;
+  padding: 16px 18px;
+  border: 1px solid var(--store-border);
+  border-radius: 16px;
+  background: #eaf3e9;
+}
+
+.manual-track fieldset { min-width: 0; border: 0; }
+.manual-track legend { margin-bottom: 6px; font-weight: 800; }
+.manual-track-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  max-width: 450px;
+}
+.manual-track-options label { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; }
+.manual-track-options input { flex-shrink: 0; }
+.manual-track input, .manual-check input { accent-color: var(--store-green); }
+
+.manual-steps { display: grid; gap: 10px; }
+.manual-step, .manual-faq details { border: 1px solid var(--store-border); border-radius: 14px; background: #fff; }
+.manual-step summary, .manual-faq summary { cursor: pointer; font-weight: 700; }
+
+.manual-step summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 17px;
+  list-style: none;
+}
+
+.manual-step summary::-webkit-details-marker { display: none; }
+.manual-step summary::after { content: ""; width: 8px; height: 8px; border-right: 2px solid var(--store-green); border-bottom: 2px solid var(--store-green); transform: rotate(45deg); margin: -4px 3px 0 0; }
+.manual-step[open] summary::after { transform: rotate(225deg); margin-top: 4px; }
+.manual-step summary strong, .manual-step summary small { display: block; }
+.manual-step summary small { color: var(--store-muted); font-weight: 500; }
+
+.manual-number {
+  display: grid;
+  width: 35px;
+  aspect-ratio: 1;
+  place-items: center;
+  border-radius: 10px;
+  background: #e8f3e7;
+  color: var(--store-green);
+}
+
+.manual-step:has(.manual-check input:checked) .manual-number {
+  background: var(--store-green);
+  color: #fff;
+}
+
+.manual-step-body { padding: 12px 17px 18px 64px; border-top: 1px solid var(--store-border); }
+.manual-step-body ol { margin: 0; padding-left: 20px; }
+.manual-step-body li + li, .manual-step-body p + p { margin-top: 6px; }
+.manual-figure { max-width: 660px; margin: 16px 0; }
+.manual-figure-small { max-width: 340px; }
+.manual-figure img { display: block; width: 100%; height: auto; border: 1px solid var(--store-border); border-radius: 10px; }
+.manual-figure figcaption { margin-top: 5px; color: var(--store-muted); font-size: 0.84rem; }
+.manual-check { display: flex; align-items: center; gap: 8px; margin-top: 12px; color: var(--store-green); font-weight: 700; cursor: pointer; }
+.manual-note { margin-top: 12px; color: var(--store-muted); }
+
+.manual-faq { margin-top: 34px; }
+.manual-faq h2 { margin-bottom: 14px; }
+.manual-faq details + details { margin-top: 9px; }
+.manual-faq summary { padding: 12px 16px; }
+.manual-faq details p { padding: 0 16px 14px; color: var(--store-muted); }
+
+.manual-footer { padding-block: 20px; background: var(--store-forest); color: #e0ede5; }
+.manual-footer .container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; }
+.manual-footer a { color: inherit; text-underline-offset: 4px; }
+
+@media (max-width: 760px) {
+  .manual-hero-art { right: -12%; opacity: 0.23; }
+  .manual-main { padding-top: 18px; }
+}
+
+@media (max-width: 480px) {
+  .manual-nav { flex-wrap: wrap; gap: 12px; }
+  .manual-roles { gap: 3px; }
+  .manual-roles a { padding: 8px 10px; font-size: 0.84rem; }
+  .manual-step-body { padding-left: 17px; }
+}

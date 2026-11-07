@@ -7,11 +7,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const grid = document.getElementById('catalogProductsGrid');
   const countLabel = document.getElementById('catalogCount');
   const searchInput = document.getElementById('catalogSearchInput');
+  const searchForm = document.getElementById('catalogSearchForm');
   const sortSelect = document.getElementById('sortBy');
   const priceRange = document.getElementById('priceRange');
   const priceRangeValue = document.getElementById('priceRangeValue');
   const filterPrescription = document.getElementById('filterPrescription');
   const btnReset = document.getElementById('btnResetFilters');
+
+  const filters = new URLSearchParams(window.location.search);
+  if (searchInput) searchInput.value = filters.get('q') || '';
+  const selectedCategory = Array.from(document.querySelectorAll('input[name="filterCat"]'))
+    .find(input => input.value === filters.get('categoria'));
+  if (selectedCategory) selectedCategory.checked = true;
+  const filterPanel = document.getElementById('catalogFilters');
+  const compactLayout = window.matchMedia('(max-width: 760px)');
+  filterPanel.open = !compactLayout.matches;
+  compactLayout.addEventListener('change', event => { filterPanel.open = !event.matches; });
 
   // Carrito UI elements
   const cartBtn = document.getElementById('cartBtn');
@@ -38,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
       applyFilters();
     } catch (err) {
       console.error(err);
-      if (grid) grid.innerHTML = '<p class="text-hint" style="grid-column: 1/-1; text-align:center; padding: 40px; color:#ef4444;">No se pudo conectar con el servidor.</p>';
+      if (countLabel) countLabel.textContent = 'Catálogo no disponible';
+      if (grid) grid.innerHTML = '<p class="catalog-message">No pudimos cargar los productos. Recarga la página para volver a intentarlo.</p>';
     }
   }
 
@@ -83,10 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderProducts(items) {
     if (!grid) return;
     grid.innerHTML = '';
-    if (countLabel) countLabel.textContent = `${items.length} medicamento(s) encontrado(s)`;
+    if (countLabel) countLabel.textContent = items.length === 1 ? '1 producto' : `${items.length} productos`;
 
     if (items.length === 0) {
-      grid.innerHTML = '<p class="text-hint" style="grid-column: 1/-1; text-align:center; padding: 60px 0;">No se encontraron productos con estos filtros.</p>';
+      grid.innerHTML = '<p class="catalog-message">No se encontraron productos con estos filtros.</p>';
       return;
     }
 
@@ -95,9 +107,9 @@ document.addEventListener('DOMContentLoaded', () => {
       card.className = 'product-card';
       card.innerHTML = `
         <div class="product-img-box">
-          <img src="${prod.imagenUrl}" alt="${prod.nombre}" loading="lazy" />
+          <img src="${window.getMeryProductImage(prod)}" alt="${prod.nombre}" loading="lazy" />
         </div>
-        <span class="stock-badge">${prod.destacado ? '⭐ Destacado' : 'En Stock'}</span>
+        <span class="stock-badge">${prod.destacado ? 'Destacado' : 'En stock'}</span>
         <h3 class="product-name">${prod.nombre}</h3>
         <p class="product-detail">${prod.presentacion}</p>
         <div class="product-price">S/ ${parseFloat(prod.precio).toFixed(2)}</div>
@@ -189,6 +201,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Event Listeners de Filtros
   if (searchInput) searchInput.addEventListener('input', applyFilters);
+  searchForm?.addEventListener('submit', event => {
+    event.preventDefault();
+    applyFilters();
+  });
   if (sortSelect) sortSelect.addEventListener('change', applyFilters);
   if (filterPrescription) filterPrescription.addEventListener('change', applyFilters);
   

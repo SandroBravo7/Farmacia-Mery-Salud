@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let cart = JSON.parse(localStorage.getItem('merysalud_cart')) || [];
   let currentShippingCost = 5.00;
   let deliveryMethod = 'DELIVERY'; // 'DELIVERY' o 'RECOJO'
-  let allProducts = [];
 
   const productsGrid = document.querySelector('.products-grid');
   const cartBtn = document.getElementById('cartBtn');
@@ -44,10 +43,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch('http://localhost:8080/api/productos');
       if (!res.ok) throw new Error('Error al conectar con la API');
       const data = await res.json();
-      allProducts = Array.isArray(data) ? data : [];
-      renderFeaturedProducts(allProducts);
+      renderFeaturedProducts(Array.isArray(data) ? data : []);
     } catch (err) {
       console.warn('Backend no detectado o error de conexión:', err);
+      if (productsGrid) {
+        productsGrid.innerHTML = '<p class="home-products-message" role="status">El catálogo no está disponible en este momento. Recarga la página para volver a intentarlo.</p>';
+      }
+    } finally {
+      productsGrid?.removeAttribute('aria-busy');
     }
   }
 
@@ -60,14 +63,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const featured = items.filter(p => p.destacado);
     const displayList = featured.length > 0 ? featured : items;
 
+    if (displayList.length === 0) {
+      productsGrid.innerHTML = '<p class="home-products-message" role="status">No hay productos disponibles en este momento.</p>';
+      return;
+    }
+
     displayList.forEach(prod => {
       const card = document.createElement('div');
       card.className = 'product-card';
       card.innerHTML = `
         <div class="product-img-box">
-          <img src="${prod.imagenUrl}" alt="${prod.nombre}" loading="lazy" />
+          <img src="${window.getMeryProductImage(prod)}" alt="${prod.nombre}" loading="lazy" />
         </div>
-        <span class="stock-badge">⭐ Destacado</span>
+        ${prod.destacado ? '<span class="stock-badge">Destacado</span>' : ''}
         <h3 class="product-name">${prod.nombre}</h3>
         <p class="product-detail">${prod.presentacion}</p>
         <div class="product-price">S/ ${parseFloat(prod.precio).toFixed(2)}</div>
@@ -364,16 +372,6 @@ document.addEventListener('DOMContentLoaded', () => {
     btnFinishOrder.addEventListener('click', () => {
       cartModal.classList.remove('open');
       showView('items');
-    });
-  }
-
-  // 8. Búsqueda desde el Navbar (redirige a catalogo.html)
-  const searchInput = document.getElementById('searchInput');
-  if (searchInput) {
-    searchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && searchInput.value.trim() !== '') {
-        window.location.href = `catalogo.html?q=${encodeURIComponent(searchInput.value.trim())}`;
-      }
     });
   }
 

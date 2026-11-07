@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Catálogo de Productos - Mery Salud</title>
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <title>Catálogo de productos | Farmacia Mery Salud</title>
+  <meta name="description" content="Encuentra medicamentos y productos para el cuidado diario en el catálogo de Farmacia Mery Salud." />
+  <link rel="stylesheet" href="assets/css/styles.css?v=inicio-1" />
+  <link rel="stylesheet" href="assets/css/storefront.css?v=1" />
+  <link rel="stylesheet" href="assets/css/catalog.css?v=1" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="catalog-page">
+<body class="storefront catalog-page">
 
   <!-- Navbar -->
   <header class="navbar-container">
@@ -19,59 +22,80 @@
         <div class="brand-icon"><i data-lucide="plus"></i></div>
         <div class="brand-text">
           <span class="brand-name">Mery Salud</span>
-          <span class="brand-sub">FARMACIA INTELIGENTE</span>
+          <span class="brand-sub">FARMACIA</span>
         </div>
       </a>
 
-      <div class="search-bar">
-        <i data-lucide="search" class="search-icon"></i>
-        <input type="text" id="catalogSearchInput" placeholder="Buscar medicamentos, principios activos o síntomas..." />
-      </div>
+      <form class="search-bar storefront-search" id="catalogSearchForm" role="search">
+        <i data-lucide="search" class="search-icon" aria-hidden="true"></i>
+        <input type="search" id="catalogSearchInput" name="q" aria-label="Buscar por producto o principio activo" placeholder="Busca un producto" />
+        <button type="submit" class="btn">Buscar</button>
+      </form>
 
       <div class="nav-actions">
-        <a href="index.html" class="btn btn-secondary btn-sm"><i data-lucide="arrow-left"></i> Inicio</a>
-        <a href="#" class="nav-cart" id="cartBtn" title="Ver Carrito">
+        <a href="#" class="nav-cart" id="cartBtn" aria-label="Ver carrito">
           <i data-lucide="shopping-cart"></i>
           <span class="cart-badge" id="cartCount">0</span>
         </a>
+        <a href="auth.html" class="nav-user" aria-label="Iniciar sesión o registrarse">
+          <i data-lucide="user" aria-hidden="true"></i>
+        </a>
       </div>
     </div>
+    <nav class="navbar-bottom" aria-label="Navegación principal">
+      <div class="container nav-links">
+        <a href="index.html">Inicio</a>
+        <a href="catalogo.html" class="active" aria-current="page">Catálogo</a>
+        <a href="manual.html">Manual</a>
+        <a href="index.html#medicamentos">Categorías</a>
+        <a href="index.html#como-funciona">Cómo pedir</a>
+      </div>
+    </nav>
   </header>
 
-  <!-- Layout Principal de Catálogo -->
-  <main class="catalog-main container">
-    
-    <!-- Sidebar de Filtros (Estilo E-Commerce) -->
-    <aside class="catalog-sidebar">
-      <div class="sidebar-header">
-        <h3><i data-lucide="sliders-horizontal"></i> Filtros</h3>
-        <button id="btnResetFilters" class="btn-link">Limpiar</button>
+  <main class="catalog-shell container">
+    <section class="catalog-hero" aria-labelledby="catalogTitle">
+      <div>
+        <p class="catalog-eyebrow">Farmacia Mery Salud</p>
+        <h1 id="catalogTitle">Catálogo de <span>productos</span></h1>
+        <p>Medicamentos y productos para el cuidado diario.</p>
       </div>
+      <div class="catalog-hero-art" aria-hidden="true"><i data-lucide="pill"></i></div>
+    </section>
+
+    <div class="catalog-main">
+    <details class="catalog-sidebar" id="catalogFilters" open>
+      <summary class="sidebar-header">
+        <span><i data-lucide="sliders-horizontal" aria-hidden="true"></i> Filtros</span>
+        <i data-lucide="chevron-down" class="catalog-filter-chevron" aria-hidden="true"></i>
+      </summary>
+      <div class="catalog-filter-controls">
+      <button type="button" id="btnResetFilters" class="btn-link">Limpiar filtros</button>
 
       <!-- Filtro por Categorías -->
       <div class="filter-group">
-        <h4>Categorías</h4>
+        <h2>Categorías</h2>
         <label class="filter-checkbox">
           <input type="radio" name="filterCat" value="ALL" checked />
           <span>Todas las categorías</span>
         </label>
         <label class="filter-checkbox">
           <input type="radio" name="filterCat" value="1" />
-          <span>Medicamentos & Recetas</span>
+          <span>Medicamentos</span>
         </label>
         <label class="filter-checkbox">
           <input type="radio" name="filterCat" value="2" />
-          <span>Cuidado Personal & Higiene</span>
+          <span>Cuidado personal</span>
         </label>
         <label class="filter-checkbox">
           <input type="radio" name="filterCat" value="3" />
-          <span>Bienestar & Nutrición</span>
+          <span>Bienestar y nutrición</span>
         </label>
       </div>
 
       <!-- Filtro por Tipo de Venta -->
       <div class="filter-group">
-        <h4>Condición Médica</h4>
+        <h2>Receta médica</h2>
         <label class="filter-checkbox">
           <input type="checkbox" id="filterPrescription" />
           <span>Solo con receta médica</span>
@@ -80,7 +104,7 @@
 
       <!-- Rango de Precio -->
       <div class="filter-group">
-        <h4>Precio Máximo</h4>
+        <h2><label for="priceRange">Precio máximo</label></h2>
         <div class="price-slider-box">
           <input type="range" id="priceRange" min="5" max="100" step="1" value="100" />
           <div class="price-range-labels">
@@ -89,18 +113,19 @@
           </div>
         </div>
       </div>
-    </aside>
+      </div>
+    </details>
 
     <!-- Área de Resultados y Cuadrícula -->
-    <section class="catalog-content">
+    <section class="catalog-content" aria-labelledby="catalogResults">
       <div class="catalog-top-bar">
         <div>
-          <h1 class="catalog-title">Todos los Productos</h1>
-          <p class="catalog-counter" id="catalogCount">Mostrando productos disponibles</p>
+          <h2 class="catalog-title" id="catalogResults">Productos</h2>
+          <p class="catalog-counter" id="catalogCount" role="status">Cargando productos…</p>
         </div>
 
         <div class="catalog-sort">
-          <label for="sortBy">Ordenar por:</label>
+          <label for="sortBy">Ordenar por</label>
           <select id="sortBy">
             <option value="featured">Destacados</option>
             <option value="price-asc">Precio: Menor a Mayor</option>
@@ -115,6 +140,7 @@
         <!-- Renderizado dinámico vía JavaScript -->
       </div>
     </section>
+    </div>
   </main>
 
   <!-- Modal Flotante de Carrito / Checkout -->
@@ -185,6 +211,7 @@
     </div>
   </div>
 
-  <script src="assets/js/catalogo.js"></script>
+  <script src="assets/js/product-images.js?v=fotos-2"></script>
+  <script src="assets/js/catalogo.js?v=catalogo-1"></script>
 </body>
 </html>

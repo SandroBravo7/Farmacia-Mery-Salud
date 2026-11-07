@@ -398,6 +398,11 @@ body {
   border-radius: 10px;
 }
 
+.product-img-box img[src^="assets/img/products/"] {
+  object-fit: contain;
+  background: #fff;
+}
+
 .stock-badge {
   align-self: flex-start;
   background: #dcfce7;
@@ -886,125 +891,6 @@ body {
   margin-top: 2px;
 }
 
-/* Layout E-Commerce Catálogo */
-.catalog-main {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 32px;
-  padding-top: 32px;
-  padding-bottom: 64px;
-}
-
-.catalog-sidebar {
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 24px;
-  height: fit-content;
-  position: sticky;
-  top: 90px;
-}
-
-.sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.sidebar-header h3 {
-  font-size: 1.05rem;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text-dark);
-}
-
-.btn-link {
-  background: none;
-  border: none;
-  color: var(--primary-blue);
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.filter-group {
-  margin-bottom: 24px;
-}
-
-.filter-group h4 {
-  font-size: 0.9rem;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: var(--text-dark);
-}
-
-.filter-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  cursor: pointer;
-}
-
-.price-slider-box input[type="range"] {
-  width: 100%;
-  accent-color: var(--primary-blue);
-}
-
-.price-range-labels {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.8rem;
-  margin-top: 6px;
-}
-
-.catalog-top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
-  background: var(--bg-light);
-  padding: 16px 20px;
-  border-radius: 12px;
-  border: 1px solid var(--border-color);
-}
-
-.catalog-title {
-  font-size: 1.4rem;
-  font-weight: 800;
-}
-
-.catalog-counter {
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
-.catalog-sort {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
-.catalog-sort select {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  background: #fff;
-  font-size: 0.85rem;
-  outline: none;
-}
-
-.catalog-grid {
-  grid-template-columns: repeat(3, 1fr);
-}
 
 /* ===================================================
    PERFIL Y MENÚ DESPLEGABLE DE USUARIO (NAVBAR)
@@ -1113,11 +999,6 @@ body {
 
 .btn-logout:hover {
   background: #fca5a5;
-}
-
-@media (max-width: 900px) {
-  .catalog-main { grid-template-columns: 1fr; }
-  .catalog-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 /* Responsividad */

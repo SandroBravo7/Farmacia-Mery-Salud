@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Manual de uso de Farmacia Mery Salud para clientes, administradores y repartidores." />
+  <title>Manual de uso | Farmacia Mery Salud</title>
+  <link rel="stylesheet" href="assets/css/styles.css?v=inicio-1" />
+  <link rel="stylesheet" href="assets/css/storefront.css?v=1" />
+  <link rel="stylesheet" href="assets/css/manual.css?v=3" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script src="assets/js/manual.js?v=2" defer></script>
+</head>
+<body class="storefront manual-page">
+  <header class="navbar-container">
+    <div class="container manual-nav">
+      <a class="brand-logo" href="index.html">
+        <span class="brand-icon" aria-hidden="true">+</span>
+        <span class="brand-text"><span class="brand-name">Mery Salud</span><span class="brand-sub">FARMACIA</span></span>
+      </a>
+      <nav aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="manual.html" aria-current="page">Manual</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container manual-main">
+    <section class="manual-hero" aria-labelledby="manual-title">
+      <div>
+        <p class="manual-eyebrow">Centro de ayuda</p>
+        <h1 id="manual-title">Manual de <span>Mery Salud</span></h1>
+        <p>Aprende a hacer un pedido o a usar el panel de tu rol. Abre cada paso para ver las instrucciones y las capturas.</p>
+      </div>
+      <div class="manual-hero-art" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M32 16c-6-5-14-7-23-6v37c9-1 17 1 23 6 6-5 14-7 23-6V10c-9-1-17 1-23 6v37"/>
+          <path d="M16 21c4 .1 8 1 11 3m-11 5c4 .1 8 1 11 3m10-8c3-2 7-2.9 11-3m-11 11c3-2 7-2.9 11-3"/>
+        </svg>
+      </div>
+    </section>
+
+    <nav class="manual-roles" aria-label="Seleccionar una guía">
+      <a href="#clientes">Clientes</a>
+      <a href="#administracion">Administración</a>
+      <a href="#reparto">Reparto</a>
+    </nav>
+
+    <section id="clientes" class="manual-guide" aria-labelledby="clientes-title">
+      <div class="manual-heading">
+        <div><p class="manual-kicker">Guía para clientes</p><h2 id="clientes-title">Haz tu primer pedido</h2></div>
+        <a class="manual-link" href="catalogo.html">Abrir catálogo <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="manual-lead"><strong>Crear una cuenta es opcional.</strong> Puedes hacer un pedido como invitado. En el formulario del pedido tendrás que indicar tus datos de contacto.</p>
+      <div class="manual-track" id="manual-track" hidden>
+        <fieldset>
+          <legend>Elige tu recorrido</legend>
+          <div class="manual-track-options">
+            <label><input type="radio" name="recorrido" value="invitado" checked /> Pedir como invitado</label>
+            <label><input type="radio" name="recorrido" value="cuenta" /> Crear o usar mi cuenta</label>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="manual-steps">
+        <details class="manual-step" data-step="cuenta">
+          <summary><span class="manual-number">+</span><span><strong>Crear una cuenta o iniciar sesión</strong><small>Paso opcional</small></span></summary>
+          <div class="manual-step-body">
+            <ol>
+              <li>Desde Inicio o Catálogo, pulsa el icono de usuario y elige <strong>Registrarse</strong>.</li>
+              <li>Completa nombre y correo. El teléfono es opcional. Crea una contraseña de al menos ocho caracteres y repítela en <strong>Confirmar contraseña</strong>.</li>
+              <li>Pulsa <strong>Crear Cuenta</strong>. La web vuelve a Inicio con la sesión iniciada.</li>
+              <li>Si ya tienes una cuenta, elige <strong>Iniciar Sesión</strong> y usa tu correo y contraseña. Puedes cerrar sesión desde el menú de perfil.</li>
+            </ol>
+            <figure class="manual-figure manual-figure-small">
+              <img src="assets/img/manual/registro.png" width="645" height="955" alt="Formulario de registro con los campos de cuenta y el botón Crear Cuenta" loading="lazy" />
+              <figcaption>Formulario de registro</figcaption>
+            </figure>
+            <a class="manual-link" href="auth.html">Abrir registro o inicio de sesión <span aria-hidden="true">↗</span></a>
+            <label class="manual-check" hidden><input type="checkbox" /> Marcar paso como completado</label>
+          </div>
+        </details>
+
+        <details class="manual-step" data-step="catalogo" open>
+          <summary><span class="manual-number">1</span><span><strong>Encontrar los productos</strong><small>Catálogo, búsqueda y filtros</small></span></summary>
+          <div class="manual-step-body">
+            <ol>
+              <li>Pulsa <strong>Explorar catálogo</strong> en Inicio o busca por nombre o principio activo.</li>
+              <li>Abre <strong>Filtros</strong> para elegir una categoría, un precio máximo o productos con receta. Usa <strong>Limpiar filtros</strong> para volver a la lista completa.</li>
+              <li>Revisa el nombre, la presentación y el precio antes de pulsar <strong>Agregar al carrito</strong>.</li>
+            </ol>
+            <figure class="manual-figure">
+              <img src="assets/img/manual/catalogo.png" width="1540" height="1099" alt="Catálogo con el buscador y la categoría Medicamentos seleccionada" loading="lazy" />
+              <figcaption>Búsqueda y filtros del catálogo</figcaption>
+            </figure>
+            <label class="manual-check" hidden><input type="checkbox" /> Marcar paso como completado</label>
+          </div>
+        </details>
+
+        <details class="manual-step" data-step="carrito">
+          <summary><span class="manual-number">2</span><span><strong>Revisar el carrito</strong><small>Cantidades, subtotal y continuación</small></span></summary>
+          <div class="manual-step-body">
+            <ol>
+              <li>Agrega los artículos que necesitas. Si estás en el Catálogo, vuelve a <strong>Inicio</strong> en el mismo navegador para completar el pedido.</li>
+              <li>Abre el carrito. Usa <strong>+</strong> y <strong>−</strong> para ajustar las cantidades. Al llegar a cero, el artículo se quita.</li>
+              <li>Revisa el subtotal y pulsa <strong>Continuar al Checkout</strong> desde Inicio.</li>
+            </ol>
+            <figure class="manual-figure manual-figure-small">
+              <img src="assets/img/manual/carrito.png" width="605" height="430" alt="Carrito con controles de cantidad, subtotal y botón Continuar al Checkout" loading="lazy" />
+              <figcaption>Resumen del carrito de Inicio</figcaption>
+            </figure>
+            <label class="manual-check" hidden><input type="checkbox" /> Marcar paso como completado</label>
+          </div>
+        </details>
+
+        <details class="manual-step" data-step="entrega">
+          <summary><span class="manual-number">3</span><span><strong>Elegir la entrega y completar los datos</strong><small>Envío a domicilio o recojo en tienda</small></span></summary>
+          <div class="manual-step-body">
+            <ol>
+              <li>Elige <strong>Envío a Domicilio</strong> (S/ 5.00 en esta versión) o <strong>Recojo en Tienda</strong> (gratis).</li>
+              <li>Ingresa tu nombre completo, celular de nueve dígitos que empiece con 9 y correo electrónico. Para domicilio, escribe la dirección completa.</li>
+              <li>El formulario de prueba permite seleccionar una foto o PDF de la receta, pero el archivo no se guarda con el pedido. Coordina con la farmacia cómo presentarla si corresponde.</li>
+            </ol>
+            <figure class="manual-figure manual-figure-small">
+              <img src="assets/img/manual/entrega.png" width="605" height="95" alt="Selector de envío a domicilio por cinco soles o recojo gratuito" loading="lazy" />
+              <figcaption>Opciones de entrega del pedido</figcaption>
+            </figure>
+            <label class="manual-check" hidden><input type="checkbox" /> Marcar paso como completado</label>
+          </div>
+        </details>
+
+        <details class="manual-step" data-step="confirmacion">
+          <summary><span class="manual-number">4</span><span><strong>Simular el pago y guardar el código</strong><small>Confirmación del pedido</small></span></summary>
+          <div class="manual-step-body">
+            <ol>
+              <li>En <strong>Pago Simulado con Tarjeta</strong>, usa datos ficticios: 16 dígitos, vencimiento en formato MM/AA y CVV de tres dígitos.</li>
+              <li>Pulsa <strong>Pagar y Confirmar</strong>. Corrige los campos señalados si aparece un aviso.</li>
+              <li>Guarda el código mostrado. <strong>Notificar por WhatsApp</strong> abre un mensaje para que lo revises antes de enviarlo. Pulsa <strong>Finalizar y Cerrar</strong> para regresar a la tienda.</li>
+            </ol>
+            <p class="manual-note"><strong>Verifica la recepción.</strong> La pantalla de confirmación puede aparecer aunque el pedido no se haya guardado. Confirma la recepción con la farmacia antes de esperar un despacho.</p>
+            <figure class="manual-figure manual-figure-small">
+              <img src="assets/img/manual/confirmacion.png" width="605" height="605" alt="Confirmación de un pedido de prueba con código y opción de WhatsApp" loading="lazy" />
+              <figcaption>Confirmación de un pedido de demostración</figcaption>
+            </figure>
+            <label class="manual-check" hidden><input type="checkbox" /> Marcar paso como completado</label>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="administracion" class="manual-guide" aria-labelledby="admin-title">
+      <div class="manual-heading">
+        <div><p class="manual-kicker">Guía para trabajadores</p><h2 id="admin-title">Panel de administración</h2></div>
+        <a class="manual-link" href="auth.html">Iniciar sesión <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="manual-lead">Usa la cuenta de administrador que te asignó el equipo. Al iniciar sesión, la web abre el panel de administración.</p>
+      <div class="manual-steps">
+        <details class="manual-step" open>
+          <summary><span class="manual-number">1</span><span><strong>Consultar y registrar productos</strong><small>Productos y stock</small></span></summary>
+          <div class="manual-step-body">
+            <ol>
+              <li>En <strong>Productos &amp; Stock</strong>, busca por nombre o principio activo y revisa el precio, las unidades y la condición de receta.</li>
+              <li>Pulsa <strong>Nuevo Producto</strong> o el lápiz de una fila. Completa nombre, principio activo si corresponde, categoría, presentación, precio y stock. Marca la opción de receta si aplica y pulsa <strong>Guardar Producto</strong>.</li>
+              <li>La papelera retira el producto de la vista actual. Al recargar, el registro vuelve a aparecer.</li>
+            </ol>
+            <figure class="manual-figure">
+              <img src="assets/img/manual/inventario.png" width="1540" height="847" alt="Panel de administración con la tabla de inventario y el botón Nuevo Producto" loading="lazy" />
+              <figcaption>Inventario en el panel de administración</figcaption>
+            </figure>
+          </div>
+        </details>
+        <details class="manual-step">
+          <summary><span class="manual-number">2</span><span><strong>Registrar cuentas de personal</strong><small>Usuarios y roles</small></span></summary>
+          <div class="manual-step-body">
+            <p>En <strong>Usuarios &amp; Personal</strong>, busca por nombre o correo. Para crear una cuenta, pulsa <strong>Registrar Usuario</strong>, completa los datos, selecciona el rol autorizado y define una contraseña inicial. Pulsa <strong>Guardar Usuario</strong>.</p>
+          </div>
+        </details>
+        <details class="manual-step">
+          <summary><span class="manual-number">3</span><span><strong>Consultar pedidos de demostración</strong><small>Gestión de pedidos</small></span></summary>
+          <div class="manual-step-body">
+            <p><strong>Gestión de Pedidos</strong> muestra un ejemplo estático. Los pedidos que se envían desde la tienda no se muestran en esa tabla.</p>
+            <p>Para cerrar la sesión, pulsa <strong>Volver a la Tienda</strong> y usa <strong>Cerrar Sesión</strong> en el menú de perfil.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section id="reparto" class="manual-guide" aria-labelledby="reparto-title">
+      <div class="manual-heading">
+        <div><p class="manual-kicker">Guía para trabajadores</p><h2 id="reparto-title">Panel de reparto</h2></div>
+        <a class="manual-link" href="auth.html">Iniciar sesión <span aria-hidden="true">↗</span></a>
+      </div>
+      <p class="manual-lead">Inicia sesión con tu cuenta de repartidor. El panel usa pedidos de demostración y reinicia sus estados al recargar la página.</p>
+      <div class="manual-steps">
+        <details class="manual-step" open>
+          <summary><span class="manual-number">1</span><span><strong>Revisar las entregas de práctica</strong><small>Todos, En Ruta y Entregados</small></span></summary>
+          <div class="manual-step-body">
+            <p>Usa las pestañas para filtrar. En cada ficha, revisa el código, los productos, el total y la dirección con su referencia.</p>
+            <figure class="manual-figure manual-figure-small">
+              <img src="assets/img/manual/ruta.png" width="795" height="595" alt="Ficha de ejemplo con estado En Camino y botón Marcar como Entregado" loading="lazy" />
+              <figcaption>Ficha de reparto de demostración</figcaption>
+            </figure>
+          </div>
+        </details>
+        <details class="manual-step">
+          <summary><span class="manual-number">2</span><span><strong>Cambiar el estado de un pedido</strong><small>De Por Recoger a Entregado</small></span></summary>
+          <div class="manual-step-body">
+            <p>En un pedido <strong>Por Recoger</strong>, pulsa <strong>Iniciar Ruta de Entrega</strong>. Cuando aparezca como <strong>En Camino</strong>, pulsa <strong>Marcar como Entregado</strong> y comprueba el resultado en la pestaña <strong>Entregados</strong>.</p>
+          </div>
+        </details>
+        <details class="manual-step">
+          <summary><span class="manual-number">3</span><span><strong>Identificar las opciones de contacto</strong><small>WhatsApp, llamadas y cierre de sesión</small></span></summary>
+          <div class="manual-step-body">
+            <p><strong>WhatsApp</strong> prepara un mensaje y <strong>Llamar</strong> abre el marcador. Usa estos controles solo con contactos de prueba autorizados. El icono <strong>Salir</strong> vuelve a Inicio, donde puedes cerrar la sesión desde el perfil.</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <section class="manual-faq" aria-labelledby="preguntas-title">
+      <h2 id="preguntas-title">Preguntas frecuentes</h2>
+      <details><summary>¿Tengo que crear una cuenta para pedir?</summary><p>Puedes hacer el pedido como invitado. El formulario te pedirá nombre, celular y correo para el pedido.</p></details>
+      <details><summary>¿Por qué el botón de pago del catálogo no confirma?</summary><p>Los productos se conservan en el carrito del mismo navegador. Vuelve a Inicio y completa el pedido desde su carrito.</p></details>
+      <details><summary>¿Qué hago si el catálogo está vacío?</summary><p>Comprueba el texto buscado y pulsa Limpiar filtros. Si aparece un error de conexión, recarga la página o avisa a quien administra la instalación.</p></details>
+    </section>
+  </main>
+
+  <footer class="manual-footer">
+    <div class="container"><span>Farmacia Mery Salud</span><a href="index.html">Volver a Inicio</a></div>
+  </footer>
+</body>
+</html>

@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mery Salud - Farmacia Inteligente</title>
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <title>Farmacia Mery Salud | Medicamentos y cuidado personal</title>
+  <meta name="description" content="Explora el catálogo de Farmacia Mery Salud y elige entre delivery y recojo en farmacia." />
+  <link rel="stylesheet" href="assets/css/styles.css?v=fotos-2" />
+  <link rel="stylesheet" href="assets/css/storefront.css?v=1" />
+  <link rel="stylesheet" href="assets/css/home.css?v=2" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body class="storefront home-page">
 
   <!-- Navbar Superior -->
   <header class="navbar-container">
@@ -19,91 +22,81 @@
         <div class="brand-icon"><i data-lucide="plus"></i></div>
         <div class="brand-text">
           <span class="brand-name">Mery Salud</span>
-          <span class="brand-sub">FARMACIA INTELIGENTE</span>
+          <span class="brand-sub">FARMACIA</span>
         </div>
       </a>
 
-      <!-- Buscador Predictivo -->
-      <div class="search-bar">
-        <i data-lucide="search" class="search-icon"></i>
-        <input type="text" id="searchInput" placeholder="Buscar por medicamento, síntoma o principio activo..." />
-      </div>
+      <form class="search-bar storefront-search" action="catalogo.html" method="get" role="search">
+        <i data-lucide="search" class="search-icon" aria-hidden="true"></i>
+        <input type="search" name="q" aria-label="Buscar por producto o principio activo" placeholder="Busca un producto" />
+        <button type="submit" class="btn">Buscar</button>
+      </form>
 
       <!-- Acciones Rápidas -->
       <div class="nav-actions">
-        <a href="https://wa.me/51987654321" target="_blank" class="btn-whatsapp-nav">
-          <i data-lucide="message-circle"></i>
-          <span>Pedir por WhatsApp</span>
-        </a>
-        <a href="#" class="nav-cart" id="cartBtn" title="Ver Carrito">
+        <a href="#" class="nav-cart" id="cartBtn" aria-label="Ver carrito">
           <i data-lucide="shopping-cart"></i>
           <span class="cart-badge" id="cartCount">0</span>
         </a>
-        <a href="auth.html" class="nav-user" title="Iniciar Sesión / Registrarse">
+        <a href="auth.html" class="nav-user" aria-label="Iniciar sesión o registrarse">
           <i data-lucide="user"></i>
         </a>
       </div>
     </div>
 
     <!-- Menú de Categorías -->
-    <nav class="navbar-bottom">
+    <nav class="navbar-bottom" aria-label="Navegación principal">
       <div class="container nav-links">
-        <a href="#inicio" class="active">Inicio</a>
-        <a href="#medicamentos">Medicamentos</a>
-        <a href="#primeros-auxilios">Primeros Auxilios</a>
-        <a href="#adulto-mayor">Adulto Mayor & Crónicos</a>
-        <a href="#ofertas">Ofertas del Mes</a>
-        <a href="#como-funciona">¿Cómo funciona?</a>
+        <a href="index.html" class="active" aria-current="page">Inicio</a>
+        <a href="catalogo.html">Catálogo</a>
+        <a href="manual.html">Manual</a>
+        <a href="#medicamentos">Categorías</a>
+        <a href="#como-funciona">Cómo pedir</a>
       </div>
     </nav>
   </header>
 
-  <!-- Hero Section -->
+  <main>
   <section class="hero-section container" id="inicio">
-    <div class="hero-text-col">
-      <h1 class="hero-title">
-        Tu farmacia de confianza con <span class="highlight-blue">atención y delivery rápido</span>
-      </h1>
-      <p class="hero-desc">
-        Pensado especialmente para la tranquilidad y cuidado de tu familia. Sube tu receta médica, pídenos ayuda por WhatsApp o compra de forma directa y segura.
-      </p>
-
-      <div class="hero-badges">
-        <span class="badge"><i data-lucide="zap"></i> Atención Inmediata</span>
-        <span class="badge"><i data-lucide="truck"></i> Envíos &lt; 2 hrs</span>
-        <span class="badge"><i data-lucide="map-pin"></i> Cobertura Local</span>
+    <div class="home-hero-panel">
+      <div class="hero-text-col">
+        <p class="home-eyebrow">Farmacia Mery Salud</p>
+        <h1 class="hero-title">Tu farmacia,<br /><span>más cerca.</span></h1>
+        <p class="hero-desc">Encuentra medicamentos y productos para el cuidado diario. Haz tu pedido y elige delivery o recojo en farmacia.</p>
+        <div class="hero-cta-group">
+          <a href="catalogo.html" class="btn home-primary">Explorar catálogo <i data-lucide="arrow-right" aria-hidden="true"></i></a>
+          <a href="https://wa.me/51987654321" target="_blank" rel="noopener noreferrer" class="btn home-outline"><i data-lucide="message-circle" aria-hidden="true"></i> WhatsApp</a>
+        </div>
       </div>
-
-      <div class="hero-cta-group">
-        <a href="catalogo.html" class="btn btn-blue">Ver Catálogo Completo <i data-lucide="arrow-right"></i></a>
-        <a href="https://wa.me/51987654321" target="_blank" class="btn btn-green"><i data-lucide="message-circle"></i> Pedir por WhatsApp</a>
+      <div class="hero-img-col">
+        <img src="https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&w=960&q=85" alt="Interior de una farmacia" class="hero-banner-img" fetchpriority="high" />
       </div>
     </div>
-
-    <div class="hero-img-col">
-      <img src="https://images.unsplash.com/photo-1576602976047-174e57a47881?auto=format&fit=crop&w=800&q=80" alt="Atención en Farmacia Mery Salud" class="hero-banner-img" />
-    </div>
+    <ul class="home-services" aria-label="Opciones para tu pedido">
+      <li><i data-lucide="truck" aria-hidden="true"></i><div><strong>Delivery a domicilio</strong><span>Indica tu dirección al hacer el pedido.</span></div></li>
+      <li><i data-lucide="store" aria-hidden="true"></i><div><strong>Recojo en farmacia</strong><span>Elige esta opción al confirmar tu pedido.</span></div></li>
+      <li><i data-lucide="message-circle" aria-hidden="true"></i><div><strong>Consultas por WhatsApp</strong><span>Pregunta por productos y disponibilidad.</span></div></li>
+    </ul>
   </section>
 
   <!-- Categorías Principales -->
   <section class="categories-section container" id="medicamentos">
-    <h2 class="section-title">Categorías Principales</h2>
+    <h2 class="section-title">Compra por categoría</h2>
     <div class="categories-grid">
-      <a href="#productos" class="cat-card">
-        <div class="cat-icon icon-blue"><i data-lucide="pill"></i></div>
-        <h3>Medicamentos & Recetas</h3>
+      <a href="catalogo.html?categoria=1" class="cat-card">
+        <div class="cat-icon icon-teal"><i data-lucide="pill" aria-hidden="true"></i></div>
+        <div><h3>Medicamentos</h3><p>Con y sin receta</p></div>
+        <i data-lucide="arrow-up-right" class="cat-arrow" aria-hidden="true"></i>
       </a>
-      <a href="#productos" class="cat-card" id="primeros-auxilios">
-        <div class="cat-icon icon-pink"><i data-lucide="briefcase-medical"></i></div>
-        <h3>Primeros Auxilios</h3>
+      <a href="catalogo.html?categoria=2" class="cat-card">
+        <div class="cat-icon icon-pink"><i data-lucide="sparkles" aria-hidden="true"></i></div>
+        <div><h3>Cuidado personal</h3><p>Higiene y primeros auxilios</p></div>
+        <i data-lucide="arrow-up-right" class="cat-arrow" aria-hidden="true"></i>
       </a>
-      <a href="#productos" class="cat-card" id="adulto-mayor">
-        <div class="cat-icon icon-amber"><i data-lucide="heart-pulse"></i></div>
-        <h3>Adulto Mayor & Crónicos</h3>
-      </a>
-      <a href="#productos" class="cat-card" id="ofertas">
-        <div class="cat-icon icon-teal"><i data-lucide="tag"></i></div>
-        <h3>Ofertas del Mes</h3>
+      <a href="catalogo.html?categoria=3" class="cat-card">
+        <div class="cat-icon icon-amber"><i data-lucide="heart-pulse" aria-hidden="true"></i></div>
+        <div><h3>Bienestar y nutrición</h3><p>Vitaminas y suplementos</p></div>
+        <i data-lucide="arrow-up-right" class="cat-arrow" aria-hidden="true"></i>
       </a>
     </div>
   </section>
@@ -112,64 +105,14 @@
   <section class="products-section container" id="productos">
     <div class="products-header">
       <div>
-        <h2 class="section-title">Productos Destacados</h2>
-        <p class="section-subtitle">Los medicamentos de uso diario y artículos esenciales con mayor demanda.</p>
+        <h2 class="section-title">Productos destacados</h2>
+        <p class="section-subtitle">Medicamentos y artículos para el cuidado diario.</p>
       </div>
       <a href="catalogo.html" class="link-see-all">Ver todos los productos <i data-lucide="arrow-right"></i></a>
     </div>
 
-    <div class="products-grid">
-      <div class="product-card">
-        <div class="product-img-box">
-          <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80" alt="Paracetamol 500mg" />
-        </div>
-        <span class="stock-badge">En Stock</span>
-        <h3 class="product-name">Paracetamol 500mg</h3>
-        <p class="product-detail">Caja x 20 tabletas</p>
-        <div class="product-price">S/ 12.90</div>
-        <button class="btn btn-add-cart" data-name="Paracetamol 500mg" data-price="12.90">
-          <i data-lucide="shopping-cart"></i> Agregar al carrito
-        </button>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img-box">
-          <img src="https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&w=400&q=80" alt="Ibuprofeno 400mg" />
-        </div>
-        <span class="stock-badge">En Stock</span>
-        <h3 class="product-name">Ibuprofeno 400mg</h3>
-        <p class="product-detail">Caja x 30 cápsulas</p>
-        <div class="product-price">S/ 18.50</div>
-        <button class="btn btn-add-cart" data-name="Ibuprofeno 400mg" data-price="18.50">
-          <i data-lucide="shopping-cart"></i> Agregar al carrito
-        </button>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img-box">
-          <img src="https://images.unsplash.com/photo-1577401239170-897942555fb3?auto=format&fit=crop&w=400&q=80" alt="Vitamina C 1000mg" />
-        </div>
-        <span class="stock-badge">En Stock</span>
-        <h3 class="product-name">Vitamina C 1000mg</h3>
-        <p class="product-detail">Tubo x 20 tabletas efervescentes</p>
-        <div class="product-price">S/ 24.90</div>
-        <button class="btn btn-add-cart" data-name="Vitamina C 1000mg" data-price="24.90">
-          <i data-lucide="shopping-cart"></i> Agregar al carrito
-        </button>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img-box">
-          <img src="https://images.unsplash.com/photo-1471864190281-a93a3070b6de?auto=format&fit=crop&w=400&q=80" alt="Omeprazol 20mg" />
-        </div>
-        <span class="stock-badge">En Stock</span>
-        <h3 class="product-name">Omeprazol 20mg</h3>
-        <p class="product-detail">Caja x 30 cápsulas</p>
-        <div class="product-price">S/ 15.90</div>
-        <button class="btn btn-add-cart" data-name="Omeprazol 20mg" data-price="15.90">
-          <i data-lucide="shopping-cart"></i> Agregar al carrito
-        </button>
-      </div>
+    <div class="products-grid" aria-busy="true">
+      <p class="home-products-message" role="status">Cargando productos destacados…</p>
     </div>
   </section>
 
@@ -177,40 +120,40 @@
   <section class="how-it-works-section" id="como-funciona">
     <div class="container">
       <div class="how-header">
-        <h2 class="section-title">¿Cómo funciona tu pedido?</h2>
-        <p class="section-subtitle">Realizar tu compra y recibirla es sumamente fácil. Proceso simple y adaptado para todos en casa.</p>
+        <h2 class="section-title">Haz tu pedido en tres pasos</h2>
       </div>
 
       <div class="steps-grid">
         <div class="step-card">
           <div class="step-top">
-            <div class="step-icon"><i data-lucide="upload-cloud"></i></div>
+            <div class="step-icon"><i data-lucide="shopping-bag" aria-hidden="true"></i></div>
             <span class="step-number">01</span>
           </div>
-          <h3>Elige productos o sube tu receta</h3>
-          <p>Busca en el catálogo o sube una foto nítida de tu receta médica desde tu celular o computadora.</p>
+          <h3>Agrega al carrito</h3>
+          <p>Busca en el catálogo y selecciona los productos que necesitas.</p>
         </div>
 
         <div class="step-card">
           <div class="step-top">
-            <div class="step-icon"><i data-lucide="user-check"></i></div>
+            <div class="step-icon"><i data-lucide="truck" aria-hidden="true"></i></div>
             <span class="step-number">02</span>
           </div>
-          <h3>Confirma pedido y dirección</h3>
-          <p>Nuestros farmacéuticos verificarán los detalles y coordinarán contigo el método de pago más cómodo.</p>
+          <h3>Elige cómo recibirlo</h3>
+          <p>Selecciona delivery a domicilio o recojo en farmacia.</p>
         </div>
 
         <div class="step-card">
           <div class="step-top">
-            <div class="step-icon"><i data-lucide="package-check"></i></div>
+            <div class="step-icon"><i data-lucide="clipboard-check" aria-hidden="true"></i></div>
             <span class="step-number">03</span>
           </div>
-          <h3>Recíbelo vía delivery</h3>
-          <p>Llevamos el pedido directo a la puerta de tu hogar, cumpliendo con los estándares de refrigeración y seguridad.</p>
+          <h3>Confirma tu pedido</h3>
+          <p>Completa tus datos y adjunta tu receta si corresponde.</p>
         </div>
       </div>
     </div>
   </section>
+  </main>
 
   <!-- Footer -->
   <footer class="main-footer">
@@ -227,18 +170,19 @@
       <div class="footer-col">
         <h4>Navegación</h4>
         <ul>
-          <li><a href="#medicamentos">Medicamentos</a></li>
-          <li><a href="#ofertas">Ofertas del Mes</a></li>
-          <li><a href="#como-funciona">¿Cómo funciona?</a></li>
+          <li><a href="catalogo.html">Catálogo</a></li>
+          <li><a href="#productos">Productos destacados</a></li>
+          <li><a href="#como-funciona">Cómo pedir</a></li>
+          <li><a href="manual.html">Manual de uso</a></li>
         </ul>
       </div>
 
       <div class="footer-col">
-        <h4>Legal</h4>
+        <h4>Categorías</h4>
         <ul>
-          <li><a href="#">Términos y Condiciones</a></li>
-          <li><a href="#">Política de Privacidad</a></li>
-          <li><a href="#">Libro de Reclamaciones</a></li>
+          <li><a href="catalogo.html?categoria=1">Medicamentos</a></li>
+          <li><a href="catalogo.html?categoria=2">Cuidado personal</a></li>
+          <li><a href="catalogo.html?categoria=3">Bienestar y nutrición</a></li>
         </ul>
       </div>
 
@@ -422,6 +366,7 @@
     </div>
   </div>
 
-  <script src="assets/js/main.js"></script>
+  <script src="assets/js/product-images.js?v=fotos-2"></script>
+  <script src="assets/js/main.js?v=inicio-1"></script>
 </body>
 </html>
