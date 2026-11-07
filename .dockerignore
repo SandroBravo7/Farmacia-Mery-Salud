@@ -1,0 +1,5 @@
+.git
+.vercel
+backend/target
+**/.env
+**/.env.*

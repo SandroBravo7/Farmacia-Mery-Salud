@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (currentMode === 'login') {
         try {
-          const res = await fetch('http://localhost:8080/api/auth/login', {
+          const res = await fetch(`${MERY_API_BASE}/api/auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password })
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-          const res = await fetch('http://localhost:8080/api/auth/register', {
+          const res = await fetch(`${MERY_API_BASE}/api/auth/register`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

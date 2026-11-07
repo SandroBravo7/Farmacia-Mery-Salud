@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 2. Cargar Productos desde Spring Boot (API REST)
   async function loadProductsFromBackend() {
     try {
-      const res = await fetch('http://localhost:8080/api/productos');
+      const res = await fetch(`${MERY_API_BASE}/api/productos`);
       if (!res.ok) throw new Error('Error al conectar con la API');
       const data = await res.json();
       renderFeaturedProducts(Array.isArray(data) ? data : []);
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const itemsText = cart.map(i => `${i.qty}x ${i.name}`).join(', ');
 
       try {
-        await fetch('http://localhost:8080/api/pedidos', {
+        await fetch(`${MERY_API_BASE}/api/pedidos`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

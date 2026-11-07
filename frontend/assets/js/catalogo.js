@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Cargar productos de Spring Boot
   async function fetchCatalog() {
     try {
-      const res = await fetch('http://localhost:8080/api/productos');
+      const res = await fetch(`${MERY_API_BASE}/api/productos`);
       if (!res.ok) throw new Error('Error al conectar con la API');
       products = await res.json();
       applyFilters();

@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 3. PRODUCTOS: Fetch & Render
   async function fetchProducts() {
     try {
-      const res = await fetch('http://localhost:8080/api/productos');
+      const res = await fetch(`${MERY_API_BASE}/api/productos`);
       if (!res.ok) throw new Error('Error al obtener productos');
       products = await res.json();
       renderProducts(products);
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       try {
-        const res = await fetch('http://localhost:8080/api/productos', {
+        const res = await fetch(`${MERY_API_BASE}/api/productos`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(productPayload)
@@ -223,7 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 5. USUARIOS: Fetch & Render
   async function fetchUsers() {
     try {
-      const res = await fetch('http://localhost:8080/api/usuarios');
+      const res = await fetch(`${MERY_API_BASE}/api/usuarios`);
       if (!res.ok) throw new Error('Error al listar usuarios');
       users = await res.json();
       renderUsers(users);
@@ -286,7 +286,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       try {
-        const res = await fetch('http://localhost:8080/api/usuarios', {
+        const res = await fetch(`${MERY_API_BASE}/api/usuarios`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
